@@ -8,10 +8,11 @@ namespace Muuzika.Gateway.Entities;
 [Index(nameof(Name), IsUnique = true)]
 public class ServerEntity: AuthenticatableEntity
 {
-    public string Name { get; set; }
-    public string Token { get; set; }
-    
-    
+    public string Name { get; set; } = null!;
+    public string Token { get; set; } = null!;
+
     [NotMapped]
     public override AuthenticatableTypeEnum Type => AuthenticatableTypeEnum.Server;
+    
+    public ICollection<RoomEntity> Rooms { get; set; } = null!;
 }
