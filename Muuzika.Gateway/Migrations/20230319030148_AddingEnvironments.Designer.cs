@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Muuzika.Gateway.Database;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Muuzika.Gateway.Migrations
 {
     [DbContext(typeof(MuuzikaDbContext))]
-    partial class MuuzikaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230319030148_Adding environments")]
+    partial class AddingEnvironments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,6 +172,10 @@ namespace Muuzika.Gateway.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("created_by_id");
+
                     b.Property<bool>("Finished")
                         .HasColumnType("boolean")
                         .HasColumnName("finished");
@@ -185,6 +192,10 @@ namespace Muuzika.Gateway.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updated_by_id");
+
                     b.HasKey("Id")
                         .HasName("pk_rooms");
 
@@ -193,8 +204,14 @@ namespace Muuzika.Gateway.Migrations
                         .HasDatabaseName("ix_rooms_code")
                         .HasFilter("not finished");
 
+                    b.HasIndex("CreatedById")
+                        .HasDatabaseName("ix_rooms_created_by_id");
+
                     b.HasIndex("ServerId")
                         .HasDatabaseName("ix_rooms_server_id");
+
+                    b.HasIndex("UpdatedById")
+                        .HasDatabaseName("ix_rooms_updated_by_id");
 
                     b.ToTable("rooms", (string)null);
                 });
@@ -293,6 +310,11 @@ namespace Muuzika.Gateway.Migrations
 
             modelBuilder.Entity("Muuzika.Gateway.Entities.RoomEntity", b =>
                 {
+                    b.HasOne("Muuzika.Gateway.Entities.AuthenticatableEntity", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .HasConstraintName("fk_rooms_authenticatables_created_by_id");
+
                     b.HasOne("Muuzika.Gateway.Entities.ServerEntity", "Server")
                         .WithMany("Rooms")
                         .HasForeignKey("ServerId")
@@ -300,7 +322,16 @@ namespace Muuzika.Gateway.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_rooms_servers_server_id");
 
+                    b.HasOne("Muuzika.Gateway.Entities.AuthenticatableEntity", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById")
+                        .HasConstraintName("fk_rooms_authenticatables_updated_by_id");
+
+                    b.Navigation("CreatedBy");
+
                     b.Navigation("Server");
+
+                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("Muuzika.Gateway.Entities.ServerEntity", b =>

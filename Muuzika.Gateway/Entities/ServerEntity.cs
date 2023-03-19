@@ -10,9 +10,10 @@ public class ServerEntity: AuthenticatableEntity
 {
     public string Name { get; set; } = null!;
     public string Token { get; set; } = null!;
-
+    
+    public EnvironmentEntity Environment { get; set; } = null!;
+    public ICollection<RoomEntity> Rooms { get; set; } = null!;
+    
     [NotMapped]
     public override AuthenticatableTypeEnum Type => AuthenticatableTypeEnum.Server;
-    
-    public ICollection<RoomEntity> Rooms { get; set; } = null!;
 }

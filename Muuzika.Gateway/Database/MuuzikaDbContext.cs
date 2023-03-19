@@ -32,14 +32,14 @@ public class MuuzikaDbContext: DbContext
     {
         var entries = ChangeTracker
             .Entries()
-            .Where(e => e is { Entity: BaseEntity, State: EntityState.Added or EntityState.Modified });
+            .Where(e => e is { Entity: BaseLogEntity, State: EntityState.Added or EntityState.Modified });
 
         var userIdString = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         int? userId = userIdString != null && int.TryParse(userIdString, out var id) ? id : null;
 
         foreach (var entry in entries)
         {
-            var entity = (BaseEntity) entry.Entity;
+            var entity = (BaseLogEntity) entry.Entity;
             entity.UpdatedAt = DateTime.UtcNow;
             entity.UpdatedById = userId;
             if (entry.State != EntityState.Added) continue;

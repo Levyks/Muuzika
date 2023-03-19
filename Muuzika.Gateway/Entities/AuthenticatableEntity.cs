@@ -6,7 +6,7 @@ using Muuzika.Gateway.Enums;
 namespace Muuzika.Gateway.Entities;
 
 [Table("authenticatables")]
-public abstract class AuthenticatableEntity: BaseEntity
+public abstract class AuthenticatableEntity: BaseLogEntity
 {
     [Column(TypeName = "text")]
     [ValueConverter(typeof(EnumToStringConverter<AuthenticatableTypeEnum>))]
