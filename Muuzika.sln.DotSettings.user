@@ -1,0 +1,20 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
+  &lt;Assembly Path="C:\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\7.0.2\ref\net7.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\7.0.2\Microsoft.Extensions.DependencyInjection.Abstractions.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Users\marci\.nuget\packages\bcrypt.net-next\4.0.3\lib\net6.0\BCrypt.Net-Next.dll" /&gt;&#xD;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ac7a4fa1_002D83c5_002D444c_002D8629_002D6d412fd09ea9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestHash" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.HashServiceTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.JwtServiceTests.ConstructorShouldThrowIfJwtKeyIsNotDefined&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.JwtServiceTests.ConstructorShouldThrowIfRequiredConfigIsNotDefined&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.JwtServiceTests.ConstructorShouldNotThrowIfRequiredConfigsAreDefined&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.JwtServiceTests.TestGenerateTokenWithDefaultParameters&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.JwtServiceTests.TestGenerateTokenWithGivenExpiresAt&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.JwtServiceTests.TestGetPrincipalFromToken&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.JwtServiceTests.TestGetPrincipalReturnsNullOnInvalidToken&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::3982EC12-B1F5-4724-992E-76601BE683D3::net7.0::Muuzika.GatewayTests.Unit.Services.JwtServiceTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::8A338081-D470-4A20-8EBD-7A2E0C76903E::net7.0::Muuzika.ServerTests.E2E.RoomE2ETests.TestCreateRoom&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

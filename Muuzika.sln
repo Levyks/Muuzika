@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muuzika.Gateway", "Muuzika.Gateway\Muuzika.Gateway.csproj", "{ECBD5A7F-FDF8-4822-9A7F-763319AD3E58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muuzika.Server", "Muuzika.Server\Muuzika.Server.csproj", "{A234D68B-4516-4DA6-B001-D3DD018F969D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muuzika.ServerTests", "Muuzika.ServerTests\Muuzika.ServerTests.csproj", "{8A338081-D470-4A20-8EBD-7A2E0C76903E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ECBD5A7F-FDF8-4822-9A7F-763319AD3E58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ECBD5A7F-FDF8-4822-9A7F-763319AD3E58}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ECBD5A7F-FDF8-4822-9A7F-763319AD3E58}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ECBD5A7F-FDF8-4822-9A7F-763319AD3E58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A234D68B-4516-4DA6-B001-D3DD018F969D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A234D68B-4516-4DA6-B001-D3DD018F969D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A234D68B-4516-4DA6-B001-D3DD018F969D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A234D68B-4516-4DA6-B001-D3DD018F969D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A338081-D470-4A20-8EBD-7A2E0C76903E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A338081-D470-4A20-8EBD-7A2E0C76903E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A338081-D470-4A20-8EBD-7A2E0C76903E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A338081-D470-4A20-8EBD-7A2E0C76903E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
