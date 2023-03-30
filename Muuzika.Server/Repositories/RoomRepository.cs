@@ -7,33 +7,52 @@ namespace Muuzika.Server.Repositories;
 
 public class RoomRepository: IRoomRepository
 {
-    private const int _maxNumberOfCodeGenerationAttempts = 10000;
-    private const int _codeLength = 4;
+    private const int CodeLength = 4;
 
+    private readonly Queue<ushort> _availableCodes = new();
     private readonly Dictionary<string, Room> _rooms = new();
-    private readonly IRandomService _randomService;
+    private readonly Func<Random> _randomFactory;
     
-    public RoomRepository(IRandomService randomService)
+    public RoomRepository(Func<Random> randomFactory)
     {
-        _randomService = randomService;
+        _randomFactory = randomFactory;
+        PopulateAvailableCodes();
     }
-    
+
     public Room? FindRoomByCode(string code)
     {
-        return _rooms.ContainsKey(code) ? _rooms[code] : null;
+        _rooms.TryGetValue(code, out var value);
+        return value;
+    }
+
+    public string? PopAvailableCode()
+    {
+        if (_availableCodes.Count == 0)
+        {
+            PopulateAvailableCodes();
+        }
+        return _availableCodes.Dequeue().ToString().PadLeft(CodeLength, '0');
     }
     
-    public string? FindAvailableRoomCode()
+    private void PushAvailableCode(ushort code)
     {
-        for (var i = 0; i < _maxNumberOfCodeGenerationAttempts; i++)
+        _availableCodes.Enqueue(code);
+    }    
+    
+    public void PushAvailableCode(string code)
+    {
+        PushAvailableCode(ushort.Parse(code));
+    }
+    
+    private void PopulateAvailableCodes()
+    {
+        var random = _randomFactory();
+        var codes = Enumerable.Range(0, (int) Math.Pow(10, CodeLength));
+
+        foreach (var code in codes.OrderBy(_ => random.Next()))
         {
-            var code = _randomService.GenerateRandomNumericString(_codeLength);
-            if (!_rooms.ContainsKey(code))
-            {
-                return code;
-            }
+            PushAvailableCode((ushort) code);
         }
-        return null;
     }
 
 }

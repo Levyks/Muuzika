@@ -3,10 +3,10 @@ using Muuzika.Server.Services.Interfaces;
 
 namespace Muuzika.Server.Services;
 
-public class GreCaptchaService: ICaptchaService
+public class NoOpCaptchaService: ICaptchaService
 {
     public Task<bool> ValidateCaptchaAsync(CaptchaAction action, string token)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(true);
     }
 }

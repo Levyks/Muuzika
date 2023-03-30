@@ -5,7 +5,7 @@ namespace Muuzika.Server.Services.Interfaces;
 
 public interface IJwtService
 {
-    string GenerateToken(ClaimsIdentity identity, DateTime? tokenExpiresAt = null);
+    string GenerateToken(ClaimsIdentity identity, Func<DateTime, DateTime> getTokenExpiresAt);
 
     ClaimsPrincipal? GetPrincipalFromToken(string token, out SecurityToken? validatedToken);
 }

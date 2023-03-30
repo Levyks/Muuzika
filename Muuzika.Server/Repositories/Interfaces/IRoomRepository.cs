@@ -5,5 +5,6 @@ namespace Muuzika.Server.Repositories.Interfaces;
 public interface IRoomRepository
 {
     Room? FindRoomByCode(string code);
-    string? FindAvailableRoomCode();
+    string? PopAvailableCode();
+    void PushAvailableCode(string code);
 }

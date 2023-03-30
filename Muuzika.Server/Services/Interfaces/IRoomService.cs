@@ -4,6 +4,6 @@ namespace Muuzika.Server.Services.Interfaces;
 
 public interface IRoomService
 {
-    RoomJoinedDto CreateRoom(string nickname);
-    RoomJoinedDto JoinRoom(string roomCode, string nickname);
+    Task<RoomCreatedOrJoinedDto> CreateRoom(CreateOrJoinRoomDto createRoomDto);
+    Task<RoomCreatedOrJoinedDto> JoinRoom(string roomCode, CreateOrJoinRoomDto joinRoomDto);
 }

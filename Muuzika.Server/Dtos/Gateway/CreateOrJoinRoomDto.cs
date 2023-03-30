@@ -2,8 +2,11 @@
 
 namespace Muuzika.Server.Dtos.Gateway;
 
-public record UsernameDto(
+public record CreateOrJoinRoomDto(
     [Required]
     [StringLength(50, MinimumLength = 3)]
-    string Username
-);
+    string Username,
+    
+    [Required]
+    string CaptchaToken
+    );

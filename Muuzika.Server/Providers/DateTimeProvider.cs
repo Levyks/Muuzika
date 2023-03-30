@@ -1,4 +1,4 @@
-﻿using Muuzika.Gateway.Providers.Interfaces;
+﻿using Muuzika.Server.Providers.Interfaces;
 
 namespace Muuzika.Server.Providers;
 

@@ -39,7 +39,7 @@ public static class RoomPlayersExtensions
 
         var identity = new ClaimsIdentity(claims);
 
-        return room.JwtService.GenerateToken(identity);
+        return room.JwtService.GenerateToken(identity, now => now.AddYears(1));
     }
     
     public static string GetTokenForPlayer(this Models.Room room, string username)

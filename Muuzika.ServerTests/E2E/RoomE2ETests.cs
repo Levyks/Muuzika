@@ -1,15 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 using Muuzika.Server.Dtos.Gateway;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
-using Muuzika.Gateway.Providers.Interfaces;
+using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Services;
-using Muuzika.Server.Services.Interfaces;
 
 namespace Muuzika.ServerTests.E2E;
 
@@ -19,7 +16,6 @@ public class RoomE2ETests
     private MockableMuuzikaWebApplicationFactory _factory = null!;
     private HttpClient _client = null!;
     
-    private Mock<IRandomService> _randomServiceMock = null!;
     private Mock<IConfiguration> _configurationMock = null!;
     private Mock<IDateTimeProvider> _dateTimeProviderMock = null!;
     
@@ -32,10 +28,8 @@ public class RoomE2ETests
     [SetUp]
     public void Setup()
     {
-        _now = new DateTime(2021, 1, 5);
-        
-        _randomServiceMock = new Mock<IRandomService>();
-        
+        _now = DateTime.UtcNow;
+
         _dateTimeProviderMock = new Mock<IDateTimeProvider>();
         _dateTimeProviderMock.Setup(x => x.GetNow()).Returns(_now);
         
@@ -45,9 +39,9 @@ public class RoomE2ETests
         _configurationMock.Setup(x => x["Jwt:Audience"]).Returns(JwtAudience);
         
         _factory = new MockableMuuzikaWebApplicationFactory()
-            .Mock(_randomServiceMock.Object)
-            .Mock(_dateTimeProviderMock.Object)
-            .Mock(_configurationMock.Object);
+            .Mock(() => new Random(42))
+            .Mock(_configurationMock.Object)
+            .Mock(_dateTimeProviderMock.Object);
         
         _client = _factory.CreateClient();
     }
@@ -56,49 +50,36 @@ public class RoomE2ETests
     public async Task TestCreateRoom()
     {
         const string username = "test";
-        const string roomCode = "1234";
+        const string captchaToken = "foo";
+        const string roomCode = "8962";
 
-        _randomServiceMock
-            .Setup(x => x.GenerateRandomNumericString(4))
-            .Returns(roomCode);
-        
-        var response = await _client.PostAsJsonAsync("/room", new UsernameDto(username));
+        var body = new CreateOrJoinRoomDto(username, captchaToken);
+        var response = await _client.PostAsJsonAsync("/room", body);
         
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
-        var content = await response.Content.ReadAsStringAsync();
-
-        var contentObject = JsonSerializer.Deserialize<Dictionary<string, object>>(content);
-        
-        Assert.That(contentObject, Is.Not.Null);
-        if (contentObject == null) return;
-
-        var tokenElement = contentObject.GetValueOrDefault("token") as JsonElement?;
-        Assert.That(tokenElement?.ValueKind, Is.EqualTo(JsonValueKind.String));
-        
-        var token = tokenElement?.GetString();
-        if (token == null) return;
-
-        Assert.Multiple(() =>
+        var contentString = await response.Content.ReadAsStringAsync();
+        var contentDto = JsonSerializer.Deserialize<RoomCreatedOrJoinedDto>(contentString, new JsonSerializerOptions
         {
-            var usernameElement = contentObject.GetValueOrDefault("username") as JsonElement?;
-            Assert.That(usernameElement?.GetString(), Is.EqualTo(username));
-            
-            var roomCodeElement = contentObject.GetValueOrDefault("roomCode") as JsonElement?;
-            Assert.That(roomCodeElement?.GetString(), Is.EqualTo(roomCode));
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
         
-
-        var jwtService = new JwtService(JwtKey, JwtIssuer, JwtAudience, new JwtSecurityTokenHandler());
+        Assert.That(contentDto, Is.Not.Null);
+        if (contentDto == null) return;
         
-        SecurityToken? securityToken = null;
-        var principal = jwtService.GetPrincipalFromToken(token, out securityToken);
         Assert.Multiple(() =>
         {
-            Assert.That(principal, Is.Not.Null);
-            Assert.That(securityToken, Is.Not.Null);
+            Assert.That(contentDto.Token, Is.Not.Null);
+            Assert.That(contentDto.Username, Is.EqualTo(username));
+            Assert.That(contentDto.RoomCode, Is.EqualTo(roomCode));
         });
-        if (principal == null || securityToken == null) return;
+
+        var jwtService = new JwtService(JwtKey, JwtIssuer, JwtAudience, new JwtSecurityTokenHandler(), _dateTimeProviderMock.Object);
+
+        var principal = jwtService.GetPrincipalFromToken(contentDto.Token, out _);
+        Assert.That(principal, Is.Not.Null);
+        
+        if (principal == null) return;
         
         Assert.Multiple(() =>
         {

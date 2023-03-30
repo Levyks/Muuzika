@@ -1,5 +1,6 @@
-﻿using Muuzika.Gateway.Providers.Interfaces;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Muuzika.Server.Providers;
+using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Repositories;
 using Muuzika.Server.Repositories.Interfaces;
 using Muuzika.Server.Services;
@@ -24,12 +25,18 @@ public class Startup
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+
+        services.AddSingleton(() => new Random());
+        services.AddSingleton(new JwtSecurityTokenHandler());
         
-        services.AddSingleton<IRandomService, RandomService>();
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        
         services.AddSingleton<IRoomRepository, RoomRepository>();
+        
         services.AddSingleton<IRoomService, RoomService>();
         services.AddSingleton<IJwtService, JwtService>();
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        // TODO: Replace with real captcha service
+        services.AddSingleton<ICaptchaService, NoOpCaptchaService>();
     }
 
     // Configure the HTTP request pipeline.

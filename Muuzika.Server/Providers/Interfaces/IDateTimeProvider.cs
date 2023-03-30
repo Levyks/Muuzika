@@ -1,4 +1,4 @@
-﻿namespace Muuzika.Gateway.Providers.Interfaces;
+﻿namespace Muuzika.Server.Providers.Interfaces;
 
 public interface IDateTimeProvider
 {

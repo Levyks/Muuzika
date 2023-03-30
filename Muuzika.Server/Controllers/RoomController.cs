@@ -16,14 +16,14 @@ public class RoomController : ControllerBase
     }
 
     [HttpPost(Name = "/")]
-    public RoomJoinedDto CreateRoom([FromBody] UsernameDto usernameDto)
+    public Task<RoomCreatedOrJoinedDto> CreateRoom([FromBody] CreateOrJoinRoomDto createRoomDto)
     {
-        return _roomService.CreateRoom(usernameDto.Username);
+        return _roomService.CreateRoom(createRoomDto);
     }
     
     [HttpPost("/{roomCode}")]
-    public RoomJoinedDto JoinRoom([FromRoute] string roomCode, [FromBody] UsernameDto usernameDto)
+    public Task<RoomCreatedOrJoinedDto> JoinRoom([FromRoute] string roomCode, [FromBody] CreateOrJoinRoomDto joinRoomDto)
     {
-        return _roomService.JoinRoom(roomCode, usernameDto.Username);
+        return _roomService.JoinRoom(roomCode, joinRoomDto);
     }
 }
