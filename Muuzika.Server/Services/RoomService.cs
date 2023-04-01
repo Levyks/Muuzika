@@ -13,12 +13,14 @@ public class RoomService: IRoomService
     private readonly IRoomRepository _roomRepository;
     private readonly IJwtService _jwtService;
     private readonly ICaptchaService _captchaService;
+    private readonly IServiceProvider _serviceProvider;
     
-    public RoomService(IRoomRepository roomRepository, IJwtService jwtService, ICaptchaService captchaService)
+    public RoomService(IRoomRepository roomRepository, IJwtService jwtService, ICaptchaService captchaService, IServiceProvider serviceProvider)
     {
         _roomRepository = roomRepository;
         _jwtService = jwtService;
         _captchaService = captchaService;
+        _serviceProvider = serviceProvider;
     }
 
     private async Task ValidateCaptcha(CaptchaAction action, CreateOrJoinRoomDto createOrJoinRoomDto)
@@ -44,7 +46,7 @@ public class RoomService: IRoomService
 
         try
         {
-            var room = new Room(code, createRoomDto.Username, _jwtService);
+            var room = new Room(_serviceProvider, code, createRoomDto.Username);
 
             return new RoomCreatedOrJoinedDto
             (

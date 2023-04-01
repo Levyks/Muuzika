@@ -2,7 +2,7 @@
 
 namespace Muuzika.Server.Models.Extensions.Room;
 
-public static class RoomPlayersExtensions
+public static class RoomPlayerExtensions
 {
     public static Player? GetPlayer(this Models.Room room, string username)
     {

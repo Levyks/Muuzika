@@ -17,11 +17,12 @@ public class Room
     public RoomStatus Status { get; set; } = RoomStatus.InLobby;
     public RoomPossibleRoundTypes PossibleRoundTypes { get; set; } = RoomPossibleRoundTypes.Both;
     
-    public Room(string code, string leaderUsername, IJwtService jwtService)
+    public Timer? DeleteIfEmptyTimer { get; set; }
+
+    public Room(IServiceProvider serviceProvider, string code, string leaderUsername)
     {
-        JwtService = jwtService;
+        JwtService = serviceProvider.GetRequiredService<IJwtService>();
         Code = code;
-        var leader = this.AddPlayer(leaderUsername);
-        Leader = leader;
+        Leader = this.AddPlayer(leaderUsername);
     }
 }
