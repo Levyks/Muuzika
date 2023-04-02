@@ -1,90 +1,45 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 using Muuzika.Server.Dtos.Gateway;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.SignalR.Client;
 using Moq;
 using Muuzika.Server.Providers.Interfaces;
-using Muuzika.Server.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Muuzika.Server.Dtos.Hub;
+using Muuzika.Server.Enums.Room;
+using Muuzika.ServerTests.E2E.Helpers;
+using Muuzika.ServerTests.E2E.Helpers.Extensions;
 
 namespace Muuzika.ServerTests.E2E;
 
 [TestFixture]
-public class RoomE2ETests
+public class RoomE2ETests: BaseE2ETest
 {
-    private MockableMuuzikaWebApplicationFactory _factory = null!;
-    private HttpClient _client = null!;
     
-    private Mock<IConfiguration> _configurationMock = null!;
-    private Mock<IDateTimeProvider> _dateTimeProviderMock = null!;
-    
-    private DateTime _now;
-
-    private const string JwtKey = "f4r0u71n7h3unch4r73db4ckw473r5";
-    private const string JwtIssuer = "https://muuzika.com";
-    private const string JwtAudience = "https://muuzika.com";
-    
-    [SetUp]
-    public void Setup()
+    [Test]
+    public async Task ShouldCreateRoomAndConnect()
     {
-        _now = DateTime.UtcNow;
-
-        _dateTimeProviderMock = new Mock<IDateTimeProvider>();
-        _dateTimeProviderMock.Setup(x => x.GetNow()).Returns(_now);
-        
-        _configurationMock = new Mock<IConfiguration>();
-        _configurationMock.Setup(x => x["Jwt:Key"]).Returns(JwtKey);
-        _configurationMock.Setup(x => x["Jwt:Issuer"]).Returns(JwtIssuer);
-        _configurationMock.Setup(x => x["Jwt:Audience"]).Returns(JwtAudience);
-        
-        _factory = new MockableMuuzikaWebApplicationFactory()
-            .Mock(() => new Random(42))
-            .Mock(_configurationMock.Object)
-            .Mock(_dateTimeProviderMock.Object);
-        
-        _client = _factory.CreateClient();
+        await this.CreateRoomAndConnect("leader");
     }
 
     [Test]
-    public async Task TestCreateRoom()
+    public async Task ShouldJoinAndConnectAndOtherPlayersShouldBeNotified()
     {
-        const string username = "test";
-        const string captchaToken = "foo";
-        const string roomCode = "8962";
+        var (roomCode, hubConnection) = await this.CreateRoomAndConnect("leader");
 
-        var body = new CreateOrJoinRoomDto(username, captchaToken);
-        var response = await _client.PostAsJsonAsync("/room", body);
+        const string playerUsername = "player1";
         
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        var tcs = new TaskCompletionSource<bool>();
         
-        var contentString = await response.Content.ReadAsStringAsync();
-        var contentDto = JsonSerializer.Deserialize<RoomCreatedOrJoinedDto>(contentString, new JsonSerializerOptions
+        hubConnection.On<string>("PlayerJoined", username =>
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            Assert.That(username, Is.EqualTo(playerUsername));
+            tcs.SetResult(true);
         });
         
-        Assert.That(contentDto, Is.Not.Null);
-        if (contentDto == null) return;
+        await this.JoinRoomAndConnect(roomCode, playerUsername);
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(contentDto.Token, Is.Not.Null);
-            Assert.That(contentDto.Username, Is.EqualTo(username));
-            Assert.That(contentDto.RoomCode, Is.EqualTo(roomCode));
-        });
-
-        var jwtService = new JwtService(JwtKey, JwtIssuer, JwtAudience, new JwtSecurityTokenHandler(), _dateTimeProviderMock.Object);
-
-        var principal = jwtService.GetPrincipalFromToken(contentDto.Token, out _);
-        Assert.That(principal, Is.Not.Null);
-        
-        if (principal == null) return;
-        
-        Assert.Multiple(() =>
-        {
-            Assert.That(principal.Claims, Has.Exactly(1).Property("Type").EqualTo("roomCode").And.Property("Value").EqualTo(roomCode));
-            Assert.That(principal.Claims, Has.Exactly(1).Property("Type").EqualTo("username").And.Property("Value").EqualTo(username));
-        });
+        Assert.That(await tcs.Task, Is.True);
     }
 }

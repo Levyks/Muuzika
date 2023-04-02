@@ -8,4 +8,5 @@ public interface IJwtService
     string GenerateToken(ClaimsIdentity identity, Func<DateTime, DateTime> getTokenExpiresAt);
 
     ClaimsPrincipal? GetPrincipalFromToken(string token, out SecurityToken? validatedToken);
+    ClaimsPrincipal? GetPrincipalFromToken(string token);
 }

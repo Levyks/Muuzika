@@ -11,6 +11,7 @@
     <ItemGroup>
         <ProjectReference Include="../Muuzika.Server/Muuzika.Server.csproj" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.4" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.4" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
         <PackageReference Include="Moq" Version="4.18.4" />
         <PackageReference Include="NUnit" Version="3.13.3" />

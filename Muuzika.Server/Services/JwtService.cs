@@ -18,27 +18,15 @@ public class JwtService : IJwtService
     private const string Algorithm = SecurityAlgorithms.HmacSha256Signature;
 
     public JwtService(
-        string? key,
-        string? issuer,
-        string? audience,
+        IConfigProvider configProvider,
         JwtSecurityTokenHandler handler,
         IDateTimeProvider dateTimeProvider)
     {
         _handler = handler;
         _dateTimeProvider = dateTimeProvider;
-        if (key == null) throw new ArgumentNullException(nameof(key));
-        _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-        _issuer = issuer ?? throw new ArgumentNullException(nameof(issuer));
-        _audience = audience ?? throw new ArgumentNullException(nameof(audience));
-    }
-
-    public JwtService(IConfiguration configuration, JwtSecurityTokenHandler handler, IDateTimeProvider dateTimeProvider): 
-        this (configuration["Jwt:Key"], 
-            configuration["Jwt:Issuer"], 
-            configuration["Jwt:Audience"], 
-            handler,
-            dateTimeProvider)
-    {
+        _securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configProvider.JwtKey));
+        _issuer = configProvider.JwtIssuer;
+        _audience = configProvider.JwtAudience;
     }
 
     public string GenerateToken(ClaimsIdentity identity, Func<DateTime, DateTime> getTokenExpiresAt)
@@ -83,5 +71,10 @@ public class JwtService : IJwtService
             validatedToken = null;
             return null;
         }
+    }
+
+    public ClaimsPrincipal? GetPrincipalFromToken(string token)
+    {
+        return GetPrincipalFromToken(token, out _);
     }
 } 

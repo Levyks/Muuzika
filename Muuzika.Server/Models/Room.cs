@@ -1,28 +1,67 @@
 ﻿using System.Collections.Immutable;
+using Microsoft.AspNetCore.SignalR;
 using Muuzika.Server.Enums.Room;
-using Muuzika.Server.Models.Extensions.Room;
+using Muuzika.Server.Extensions.Room;
+using Muuzika.Server.Hubs;
+using Muuzika.Server.Hubs.Interfaces;
+using Muuzika.Server.Mappers.Interfaces;
+using Muuzika.Server.Providers.Interfaces;
+using Muuzika.Server.Repositories.Interfaces;
 using Muuzika.Server.Services.Interfaces;
+using Serilog;
 
 namespace Muuzika.Server.Models;
 
-public class Room
-{
-    public readonly IJwtService JwtService;
-    public string Code { get; set; }
+public sealed class Room: IDisposable
+{    
+    public readonly string Code;
     public Player Leader { get; set; }
-    public Dictionary<string, Player> PlayersDictionary { get; set; } = new();
-    public ImmutableArray<Player> Players => PlayersDictionary.Values.ToImmutableArray();
-    public Round[]? Rounds { get; set; }
-    
     public RoomStatus Status { get; set; } = RoomStatus.InLobby;
     public RoomPossibleRoundTypes PossibleRoundTypes { get; set; } = RoomPossibleRoundTypes.Both;
+    public ImmutableArray<Round>? Rounds { get; set; }
     
-    public Timer? DeleteIfEmptyTimer { get; set; }
+    internal readonly Dictionary<string, Player> PlayersDictionary = new();
 
-    public Room(IServiceProvider serviceProvider, string code, string leaderUsername)
+    internal readonly Serilog.ILogger Logger;
+    internal readonly IJwtService JwtService;
+    internal readonly IConfigProvider ConfigProvider;
+    internal readonly IHubContext<RoomHub, IRoomHubClient> HubContext;
+    internal readonly IRoomMapper RoomMapper;
+    
+    private readonly IRoomRepository _repository;
+    
+    public CancellationTokenSource? CloseIfEmptyCancellationTokenSource { get; set; }
+    public readonly HashSet<CancellationTokenSource> CancellationTokenSources = new();
+    
+    
+    public Room(string code, string leaderUsername, IRoomRepository repository, IServiceProvider serviceProvider)
     {
+        Logger = Log.Logger
+            .ForContext<Room>()
+            .ForContext("AdditionalSourceIdentifier", code);
+
         JwtService = serviceProvider.GetRequiredService<IJwtService>();
+        HubContext = serviceProvider.GetRequiredService<IHubContext<RoomHub, IRoomHubClient>>();
+        ConfigProvider = serviceProvider.GetRequiredService<IConfigProvider>();
+        RoomMapper = serviceProvider.GetRequiredService<IRoomMapper>();
+        
+        _repository = repository;
+        
         Code = code;
         Leader = this.AddPlayer(leaderUsername);
+        
+        this.ScheduleCloseIfEmpty();
+    }
+    
+    ~Room()
+    {
+        Logger.Information("Garbage collected");
+    }
+    
+    public void Dispose()
+    {
+        Logger.Information("Disposing");
+        _repository.RemoveRoom(this);
+        this.CancelAllTasks();
     }
 }

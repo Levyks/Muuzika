@@ -2,9 +2,21 @@
 
 public enum ExceptionType
 {
+    #region Endpoints
     InvalidCaptcha,
     OutOfAvailableRoomCodes,
-    RoomNotFound,
     RoomIsFull,
     UsernameAlreadyTaken,
+    #endregion
+    
+    #region Hub
+    NoTokenProvided,
+    InvalidToken,
+    PlayerNotFound,
+    #endregion
+
+    #region Both
+    RoomNotFound,
+    Unknown,
+    #endregion
 }

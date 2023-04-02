@@ -21,9 +21,16 @@ public class RoomController : ControllerBase
         return _roomService.CreateRoom(createRoomDto);
     }
     
-    [HttpPost("/{roomCode}")]
+    [HttpPost("{roomCode}")]
     public Task<RoomCreatedOrJoinedDto> JoinRoom([FromRoute] string roomCode, [FromBody] CreateOrJoinRoomDto joinRoomDto)
     {
         return _roomService.JoinRoom(roomCode, joinRoomDto);
     }
+    
+    [HttpGet("gc")]
+    public void GarbageCollect()
+    {
+        GC.Collect();
+    }
+    
 }
