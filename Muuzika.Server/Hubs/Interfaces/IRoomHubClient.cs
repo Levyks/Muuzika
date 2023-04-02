@@ -10,6 +10,7 @@ public interface IRoomHubClient
     Task PlayerJoined(string username);
     Task PlayerLeft(string username);
     Task PlayerIsConnectedChanged(string username, bool isConnected);
+    Task RoomLeaderChanged(string username);
     
     Task UpdateScores(Dictionary<string, int> scores);
 }

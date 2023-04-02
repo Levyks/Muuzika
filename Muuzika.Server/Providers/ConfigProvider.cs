@@ -9,7 +9,8 @@ public class ConfigProvider: IConfigProvider
     public string JwtKey { get; }
     public string JwtIssuer { get; }
     public string JwtAudience { get; }
-    public TimeSpan DelayBeforeRoomCloseIfEmpty { get; }
+    public TimeSpan DelayCloseRoomAfterLastPlayerLeft { get; }
+    public TimeSpan DelayDisconnectedPlayerRemoval { get; }
 
     public ConfigProvider(IConfiguration configuration)
     {
@@ -18,7 +19,8 @@ public class ConfigProvider: IConfigProvider
         JwtKey = Get("Jwt:Key");
         JwtIssuer = Get("Jwt:Issuer");
         JwtAudience = Get("Jwt:Audience");
-        DelayBeforeRoomCloseIfEmpty = GetTimeSpan("Room:DelayBeforeCloseIfEmpty");
+        DelayCloseRoomAfterLastPlayerLeft = GetTimeSpan("Room:DelayCloseRoomAfterLastPlayerLeft");
+        DelayDisconnectedPlayerRemoval = GetTimeSpan("Room:DelayDisconnectedPlayerRemoval");
     }
 
     private TimeSpan GetTimeSpan(string key)

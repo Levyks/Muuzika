@@ -48,7 +48,6 @@ public static class RoomTaskExtensions
         
         room.WatchTask(task);
             
-        // ReSharper disable once MethodSupportsCancellation
         task.ContinueWith(t =>
         {
             room.CancellationTokenSources.Remove(cts);
@@ -62,7 +61,7 @@ public static class RoomTaskExtensions
             {
                 room.HandleBackgroundException(e);
             }
-        });
+        }, cts.Token);
         
         return cts;
     }

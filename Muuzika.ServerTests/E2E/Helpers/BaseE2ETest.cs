@@ -29,7 +29,8 @@ public abstract class BaseE2ETest
         _configProviderMock.Setup(x => x.JwtKey).Returns(JwtKey);
         _configProviderMock.Setup(x => x.JwtIssuer).Returns(JwtIssuer);
         _configProviderMock.Setup(x => x.JwtAudience).Returns(JwtAudience);
-        _configProviderMock.Setup(x => x.DelayBeforeRoomCloseIfEmpty).Returns(TimeSpan.FromMinutes(5));
+        _configProviderMock.Setup(x => x.DelayCloseRoomAfterLastPlayerLeft).Returns(TimeSpan.FromMinutes(5));
+        _configProviderMock.Setup(x => x.DelayDisconnectedPlayerRemoval).Returns(TimeSpan.FromMinutes(2));
         
         Factory = new MockableMuuzikaWebApplicationFactory()
             .Mock(() => new Random(42))

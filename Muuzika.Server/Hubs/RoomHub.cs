@@ -31,6 +31,13 @@ public class RoomHub: Hub<IRoomHubClient>
     }
     
     public InvocationResultDto<StateSyncDto> SyncAll() => WrapInvocation(() => _roomMapper.ToStateSyncDto(Room, Player));
+
+    public InvocationResultDto<object?> LeaveRoom() => WrapInvocation<object?>(() =>
+    {
+        Room.RemovePlayer(Player);
+        Context.Abort();
+        return null;
+    });
     
     #region Lifecycle
     public override async Task OnConnectedAsync()
@@ -38,7 +45,6 @@ public class RoomHub: Hub<IRoomHubClient>
         var player = this.ParseTokenAndGetPlayer();
         
         player.ConnectionId = Context.ConnectionId;
-        player.IsConnected = true;
         Context.Items.Add("player", player);
         
         await Groups.AddToGroupAsync(Context.ConnectionId, Room.Code);
@@ -50,7 +56,6 @@ public class RoomHub: Hub<IRoomHubClient>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
         Player.ConnectionId = null;
-        Player.IsConnected = false;
         Room.HandlePlayerDisconnection(Player);
         
         return base.OnDisconnectedAsync(exception);

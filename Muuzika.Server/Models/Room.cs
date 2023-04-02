@@ -27,10 +27,11 @@ public sealed class Room: IDisposable
     internal readonly IConfigProvider ConfigProvider;
     internal readonly IHubContext<RoomHub, IRoomHubClient> HubContext;
     internal readonly IRoomMapper RoomMapper;
+    internal readonly Func<Random> RandomFactory;
     
     private readonly IRoomRepository _repository;
     
-    public CancellationTokenSource? CloseIfEmptyCancellationTokenSource { get; set; }
+    public CancellationTokenSource? CloseAfterLastPlayerLeftCancellationTokenSource { get; set; }
     public readonly HashSet<CancellationTokenSource> CancellationTokenSources = new();
     
     
@@ -44,6 +45,7 @@ public sealed class Room: IDisposable
         HubContext = serviceProvider.GetRequiredService<IHubContext<RoomHub, IRoomHubClient>>();
         ConfigProvider = serviceProvider.GetRequiredService<IConfigProvider>();
         RoomMapper = serviceProvider.GetRequiredService<IRoomMapper>();
+        RandomFactory = serviceProvider.GetRequiredService<Func<Random>>();
         
         _repository = repository;
         

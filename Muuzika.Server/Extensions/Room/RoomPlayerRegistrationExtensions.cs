@@ -34,21 +34,49 @@ public static class RoomPlayerRegistrationExtensions
     
     public static Player AddPlayer(this Models.Room room, Models.Player player)
     {
+        if (room.CloseAfterLastPlayerLeftCancellationTokenSource != null)
+            room.CancelCloseIfEmptySchedule();
+        
         room.PlayersDictionary.Add(player.Username, player);
         room.Logger.Information("Player {Username} joined the room", player.Username);
+        room.WatchTask(room.ToAll().PlayerJoined(player.Username));
+        
+        room.SchedulePlayerRemoval(player);
         return player;
     }
     
-    public static Models.Player AddPlayer(this Models.Room room, string username)
+    public static Player AddPlayer(this Models.Room room, string username)
     {
-        var player = new Models.Player(room, username);
+        var player = new Player(room, username);
         return room.AddPlayer(player);
     }
 
-    public static bool RemovePlayer(this Models.Room room, string username)
+    public static void RemovePlayer(this Models.Room room, Player player)
     {
-        room.Logger.Information("Player {Username} left the room", username);
-        return room.PlayersDictionary.Remove(username);
+        room.PlayersDictionary.Remove(player.Username);
+        room.Logger.Information("Player {Username} left the room", player.Username);
+        room.WatchTask(room.ToAll().PlayerLeft(player.Username));
+
+        if (room.PlayersDictionary.Count == 0)
+        {
+            room.ScheduleCloseIfEmpty();
+        }
+        else if (room.Leader == player)
+        {
+            room.SetLeader(room.GetRandomPlayer());
+        }
+    }
+    
+    public static Player GetRandomPlayer(this Models.Room room)
+    {
+        var random = room.RandomFactory();
+        return room.PlayersDictionary.Values.ElementAt(random.Next(room.PlayersDictionary.Count));
+    }
+    
+    public static void SetLeader(this Models.Room room, Player player)
+    {
+        room.Leader = player;
+        room.WatchTask(room.ToAll().RoomLeaderChanged(player.Username));
     }
     
     public static string GetTokenForPlayer(this Models.Room room, Models.Player player)

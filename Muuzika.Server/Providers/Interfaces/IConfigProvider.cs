@@ -6,5 +6,6 @@ public interface IConfigProvider
     string JwtIssuer { get; }
     string JwtAudience { get; }
     
-    TimeSpan DelayBeforeRoomCloseIfEmpty { get; }
+    TimeSpan DelayCloseRoomAfterLastPlayerLeft { get; }
+    TimeSpan DelayDisconnectedPlayerRemoval { get; }
 }
