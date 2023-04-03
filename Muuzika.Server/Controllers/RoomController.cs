@@ -27,11 +27,4 @@ public class RoomController : ControllerBase
         Console.WriteLine($"Joining room {roomCode}");
         return _roomService.JoinRoom(roomCode, joinRoomDto);
     }
-    
-    [HttpGet("gc")]
-    public void GarbageCollect()
-    {
-        GC.Collect();
-    }
-    
 }

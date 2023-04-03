@@ -3,17 +3,19 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Muuzika.Server.Dtos.Gateway;
 using Muuzika.Server.Dtos.Hub;
+using Muuzika.Server.Dtos.Misc;
 using Muuzika.Server.Enums.Room;
 
 namespace Muuzika.ServerTests.E2E.Helpers.Extensions;
 
 public static class RoomTestsExtensions
 {
-    private static HubConnection CreateHubConnection(this BaseE2ETest test, string? token)
+    public static HubConnection CreateHubConnection(this BaseE2ETest test, string? token)
     {
         var hubConnection = new HubConnectionBuilder()
             .WithUrl(test.Factory.Server.BaseAddress + "hub",  options =>
@@ -31,7 +33,7 @@ public static class RoomTestsExtensions
         return hubConnection;
     }
     
-    public static async Task<(string, HubConnection)> CreateRoomAndConnect(this BaseE2ETest test, string username)
+    public static async Task<(string, string)> CreateRoom(this BaseE2ETest test, string username)
     {
         const string captchaToken = "foo";
 
@@ -43,6 +45,9 @@ public static class RoomTestsExtensions
         var contentString = await response.Content.ReadAsStringAsync();
         var responseDict = JsonSerializer.Deserialize<Dictionary<string, string>>(contentString);
         
+        Assert.That(responseDict, Is.Not.Null);
+        if (responseDict == null) throw new Exception("We should not be here");
+        
         Assert.Multiple(() =>
         {
             Assert.That(responseDict?.GetValueOrDefault("token"), Is.Not.Null);
@@ -50,9 +55,14 @@ public static class RoomTestsExtensions
             Assert.That(responseDict?.GetValueOrDefault("roomCode"), Is.Not.Null);
         });
 
-        var roomCode = responseDict!["roomCode"];
+        return (responseDict["roomCode"], responseDict["token"]);
+    }
+    
+    public static async Task<(string, HubConnection)> CreateRoomAndConnect(this BaseE2ETest test, string username)
+    {
+        var (roomCode, token) = await test.CreateRoom(username);
 
-        var hubConnection = test.CreateHubConnection(responseDict["token"]);
+        var hubConnection = test.CreateHubConnection(token);
 
         await hubConnection.StartAsync();
         
@@ -89,7 +99,6 @@ public static class RoomTestsExtensions
         
         return (roomCode, hubConnection);
     }
-    
     
     public static async Task<HubConnection> JoinRoomAndConnect(this BaseE2ETest test, string roomCode, string username)
     {
@@ -138,6 +147,21 @@ public static class RoomTestsExtensions
         });
         
         return hubConnection;
+    }
+    
+    public static BaseExceptionDto ParseHubException(this BaseE2ETest test, HubException ex)
+    {
+        const string needle = "HubException:";
+        var messagePart = ex.Message[(ex.Message.IndexOf(needle, StringComparison.Ordinal) + needle.Length)..].Trim();
+        
+        const string prefix = "$@";
+        if (!messagePart.StartsWith(prefix)) throw new Exception("Invalid HubException message");
+        var exceptionJson = messagePart[prefix.Length..];
+        
+        var baseException = JsonSerializer.Deserialize<BaseExceptionDto>(exceptionJson, test.Factory.Services.GetRequiredService<JsonSerializerOptions>());
+        if (baseException == null) throw new Exception("Invalid HubException message");
+        
+        return baseException;
     }
     
 }

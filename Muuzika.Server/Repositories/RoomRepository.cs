@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Muuzika.Server.Exceptions;
 using Muuzika.Server.Models;
+using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Repositories.Interfaces;
 using Muuzika.Server.Services.Interfaces;
 
@@ -12,11 +13,11 @@ public class RoomRepository: IRoomRepository
 
     private readonly Queue<ushort> _availableCodes = new();
     private readonly Dictionary<uint, Room> _rooms = new();
-    private readonly Func<Random> _randomFactory;
+    private readonly IRandomProvider _randomProvider;
     
-    public RoomRepository(Func<Random> randomFactory)
+    public RoomRepository(IRandomProvider randomProvider)
     {
-        _randomFactory = randomFactory;
+        _randomProvider = randomProvider;
         PopulateAvailableCodes();
     }
 
@@ -44,12 +45,15 @@ public class RoomRepository: IRoomRepository
             throw new ArgumentException($"Room code {room.Code} is not a valid code");
         }
             
-        if (_rooms.ContainsKey(parsedCode))
+        lock (_rooms)
         {
-            throw new ArgumentException($"Room with code {room.Code} already exists");
-        }
+            if (_rooms.ContainsKey(parsedCode))
+            {
+                throw new ArgumentException($"Room with code {room.Code} already exists");
+            }
         
-        _rooms[parsedCode] = room;
+            _rooms[parsedCode] = room;
+        }
     }
     
     public bool RemoveRoom(Room room)
@@ -65,12 +69,15 @@ public class RoomRepository: IRoomRepository
 
     public string? PopAvailableCode()
     {
-        return _availableCodes.Count == 0 ? null : _availableCodes.Dequeue().ToString().PadLeft(CodeLength, '0');
+        lock (_availableCodes)
+        {
+            return _availableCodes.Count == 0 ? null : _availableCodes.Dequeue().ToString().PadLeft(CodeLength, '0');
+        }
     }
     
     private void PushAvailableCode(ushort code)
     {
-        _availableCodes.Enqueue(code);
+        lock (_availableCodes) _availableCodes.Enqueue(code);
     }    
     
     public void PushAvailableCode(string code)
@@ -80,7 +87,7 @@ public class RoomRepository: IRoomRepository
     
     private void PopulateAvailableCodes()
     {
-        var random = _randomFactory();
+        var random = _randomProvider.GetRandom();
         var codes = Enumerable.Range(0, (int) Math.Pow(10, CodeLength));
 
         foreach (var code in codes.OrderBy(_ => random.Next()))

@@ -25,9 +25,9 @@ public sealed class Room: IDisposable
     internal readonly Serilog.ILogger Logger;
     internal readonly IJwtService JwtService;
     internal readonly IConfigProvider ConfigProvider;
+    internal readonly IRandomProvider RandomProvider;
     internal readonly IHubContext<RoomHub, IRoomHubClient> HubContext;
     internal readonly IRoomMapper RoomMapper;
-    internal readonly Func<Random> RandomFactory;
     
     private readonly IRoomRepository _repository;
     
@@ -44,8 +44,8 @@ public sealed class Room: IDisposable
         JwtService = serviceProvider.GetRequiredService<IJwtService>();
         HubContext = serviceProvider.GetRequiredService<IHubContext<RoomHub, IRoomHubClient>>();
         ConfigProvider = serviceProvider.GetRequiredService<IConfigProvider>();
+        RandomProvider = serviceProvider.GetRequiredService<IRandomProvider>();
         RoomMapper = serviceProvider.GetRequiredService<IRoomMapper>();
-        RandomFactory = serviceProvider.GetRequiredService<Func<Random>>();
 
         _repository = repository;
         

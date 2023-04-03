@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using Moq;
+﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Muuzika.Server.Dtos.Gateway;
 using Muuzika.Server.Dtos.Hub;
+using Muuzika.Server.Dtos.Misc;
 using Muuzika.Server.Enums.Misc;
 using Muuzika.Server.Enums.Room;
 using Muuzika.Server.Models;
 using Muuzika.ServerTests.E2E.Helpers;
 using Muuzika.ServerTests.E2E.Helpers.Extensions;
+using System.Text.Json;
 
 namespace Muuzika.ServerTests.E2E;
 
@@ -17,6 +21,23 @@ public class RoomE2ETests: BaseE2ETest
     public async Task ShouldCreateRoomAndConnect()
     {
         await this.CreateRoomAndConnect("leader");
+    }
+
+    [Test]
+    public async Task ShouldCreate10000RoomsAndFailToCreateOneMore()
+    {
+        await Task.WhenAll(Enumerable.Range(0, 10000).Select(_ => this.CreateRoom("leader")));
+        
+        var body = new CreateOrJoinRoomDto("foo", "bar");
+        var response = await Client.PostAsJsonAsync("/room", body);
+        
+        var contentString = await response.Content.ReadAsStringAsync();
+        var baseExceptionDto = JsonSerializer.Deserialize<BaseExceptionDto>(contentString, Factory.Services.GetRequiredService<JsonSerializerOptions>());
+        
+        Assert.That(baseExceptionDto, Is.Not.Null);
+        if (baseExceptionDto == null) throw new Exception("We should not be here");
+        
+        Assert.That(baseExceptionDto.Type, Is.EqualTo(ExceptionType.OutOfAvailableRoomCodes));
     }
 
     [Test]

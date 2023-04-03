@@ -86,7 +86,7 @@ public static class RoomPlayerRegistrationExtensions
     
     public static Player GetRandomPlayer(this Models.Room room)
     {
-        var random = room.RandomFactory();
+        var random = room.RandomProvider.GetRandom();
         return room.PlayersDictionary.Values.ElementAt(random.Next(room.PlayersDictionary.Count));
     }
     

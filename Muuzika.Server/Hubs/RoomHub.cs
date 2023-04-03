@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.SignalR;
 using Muuzika.Server.Dtos.Hub;
 using Muuzika.Server.Exceptions;
 using Muuzika.Server.Extensions.Room;
@@ -15,6 +17,7 @@ public class RoomHub: Hub<IRoomHubClient>
 {
     public readonly IJwtService JwtService;
     public readonly IRoomRepository RoomRepository;
+    public readonly JsonSerializerOptions JsonSerializerOptions;
     
     private readonly IRoomMapper _roomMapper;
     private readonly IExceptionMapper _exceptionMapper;
@@ -22,12 +25,13 @@ public class RoomHub: Hub<IRoomHubClient>
     private Player Player => Context.Items["player"] as Player ?? throw new Exception("Player not found in hub context");
     private Room Room => Player.Room;
     
-    public RoomHub(IJwtService jwtService, IRoomRepository roomRepository, IRoomMapper roomMapper, IExceptionMapper exceptionMapper)
+    public RoomHub(IJwtService jwtService, IRoomRepository roomRepository, IRoomMapper roomMapper, IExceptionMapper exceptionMapper, JsonSerializerOptions jsonSerializerOptions)
     {
         JwtService = jwtService;
         RoomRepository = roomRepository;
         _roomMapper = roomMapper;
         _exceptionMapper = exceptionMapper;
+        JsonSerializerOptions = jsonSerializerOptions;
     }
     
     public InvocationResultDto<StateSyncDto> SyncAll() => WrapInvocation(() => _roomMapper.ToStateSyncDto(Room, Player));
@@ -55,15 +59,23 @@ public class RoomHub: Hub<IRoomHubClient>
     #region Lifecycle
     public override async Task OnConnectedAsync()
     {
-        var player = this.ParseTokenAndGetPlayer();
-        
-        player.HubContext = Context;
-        Context.Items.Add("player", player);
-        
-        await Groups.AddToGroupAsync(Context.ConnectionId, Room.Code);
-        Room.HandlePlayerConnection(player);
+        try
+        {
+            var player = this.ParseTokenAndGetPlayer();
 
-        await base.OnConnectedAsync();
+            player.HubContext = Context;
+            Context.Items.Add("player", player);
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, Room.Code);
+            Room.HandlePlayerConnection(player);
+
+            await base.OnConnectedAsync();
+        }
+        catch (BaseException ex)
+        {
+            var stringifiedEx = JsonSerializer.Serialize(_exceptionMapper.ToDto(ex), JsonSerializerOptions);
+            throw new HubException($"$@{stringifiedEx}");
+        }
     }
     
     public override Task OnDisconnectedAsync(Exception? exception)

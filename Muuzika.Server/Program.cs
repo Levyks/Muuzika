@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using Muuzika.Server.Filters;
 using Muuzika.Server.Hubs;
 using Muuzika.Server.Mappers;
 using Muuzika.Server.Mappers.Interfaces;
@@ -27,16 +29,29 @@ try
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog();
     
-    var jsonStringEnumConverter = new JsonStringEnumConverter();
-    builder.Services.AddControllers()
+    var jsonSerializerOptions = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter() }
+    };
+    
+
+    builder.Services.AddControllers(options =>
+        {
+            options.Filters.Add(new BaseExceptionFilter());
+        })
         .AddJsonOptions(options =>
         {
-            options.JsonSerializerOptions.Converters.Add(jsonStringEnumConverter);
+            options.JsonSerializerOptions.PropertyNamingPolicy = jsonSerializerOptions.PropertyNamingPolicy;
+            foreach (var converter in jsonSerializerOptions.Converters)
+            {
+                options.JsonSerializerOptions.Converters.Add(converter);
+            }
         });
     builder.Services.AddSignalR()
         .AddJsonProtocol(options =>
         {
-            options.PayloadSerializerOptions.Converters.Add(jsonStringEnumConverter);
+            options.PayloadSerializerOptions = jsonSerializerOptions;
         });
     
     builder.Services.AddCors(options =>
@@ -54,12 +69,13 @@ try
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    
-    builder.Services.AddSingleton(() => new Random());
+
+    builder.Services.AddSingleton(jsonSerializerOptions);
     builder.Services.AddSingleton(new JwtSecurityTokenHandler());
 
     builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
     builder.Services.AddSingleton<IConfigProvider, ConfigProvider>();
+    builder.Services.AddSingleton<IRandomProvider, RandomProvider>();
     
     builder.Services.AddSingleton<IPlayerMapper, PlayerMapper>();
     builder.Services.AddSingleton<IRoomMapper, RoomMapper>();

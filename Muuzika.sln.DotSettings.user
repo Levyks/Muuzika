@@ -8,8 +8,6 @@
 	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\marci\AppData\Local\JetBrains\Rider2022.3\resharper-host\temp\Rider\vAny\CoverageData\_Muuzika.-592631041\Snapshot\snapshot.utdcvr</s:String>
 	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ac7a4fa1_002D83c5_002D444c_002D8629_002D6d412fd09ea9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestHash" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::8A338081-D470-4A20-8EBD-7A2E0C76903E::net7.0::Muuzika.ServerTests.E2E.RoomE2ETests&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
+  &lt;Project Location="C:\Users\marci\Documents\Codes\dotnet\Muuzika\Muuzika.ServerTests" Presentation="&amp;lt;Muuzika.ServerTests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	</wpf:ResourceDictionary>

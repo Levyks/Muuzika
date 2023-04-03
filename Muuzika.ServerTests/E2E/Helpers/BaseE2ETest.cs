@@ -1,5 +1,6 @@
 ﻿using Moq;
 using Muuzika.Server.Enums.Room;
+using Muuzika.Server.Providers;
 using Muuzika.Server.Providers.Interfaces;
 
 namespace Muuzika.ServerTests.E2E.Helpers;
@@ -35,7 +36,7 @@ public abstract class BaseE2ETest
         ConfigProviderMock.Setup(x => x.RoomDefaultRoundDuration).Returns(TimeSpan.FromSeconds(15));
         
         Factory = new MockableMuuzikaWebApplicationFactory()
-            .Mock(() => new Random(42))
+            .Mock(new RandomProvider(42))
             .Mock(ConfigProviderMock)
             .Mock(DateTimeProviderMock);
     }

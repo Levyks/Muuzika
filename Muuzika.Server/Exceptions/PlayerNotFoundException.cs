@@ -1,10 +1,12 @@
-﻿using Muuzika.Server.Enums.Misc;
+﻿using System.Net;
+using Muuzika.Server.Enums.Misc;
 
 namespace Muuzika.Server.Exceptions;
 
 public class PlayerNotFoundException: BaseException
 {
     public override ExceptionType Type => ExceptionType.PlayerNotFound;
+    public override HttpStatusCode StatusCode => HttpStatusCode.NotFound;
     
     private readonly string _roomCode;
     private readonly string _username;

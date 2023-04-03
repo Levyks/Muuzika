@@ -35,47 +35,45 @@ public class ConfigProvider: IConfigProvider
     
     private T GetEnum<T>(string key) where T: Enum
     {
+        var value = Get(key);
         try
         {
-            return (T)Enum.Parse(typeof(T), Get(key));
+            return (T)Enum.Parse(typeof(T), value);
         }
         catch (ArgumentException ex)
         {
-            throw new ArgumentException($"{key} is not a valid {typeof(T).Name}", ex);
+            throw new ArgumentException($"{key} is not a valid value for {typeof(T).Name} (value: \"{value}\")", ex);
         }
     }
 
     private ushort GetUshort(string key)
     {
+        var value = Get(key);
         try
         {
-            return ushort.Parse(Get(key));
+            return ushort.Parse(value);
         }
         catch (FormatException ex)
         {
-            throw new FormatException($"{key} is not a valid ushort", ex);
+            throw new ArgumentException($"{key} is not a valid ushort (value: \"{value}\")", ex);
         }
     }
 
     private TimeSpan GetTimeSpan(string key)
     {
+        var value = Get(key);
         try
         {
-            return TimeSpan.Parse(Get(key));
+            return TimeSpan.Parse(value);
         }
         catch (FormatException ex)
         {
-            throw new FormatException($"{key} is not a valid TimeSpan", ex);
+            throw new ArgumentException($"{key} is not a valid TimeSpan (value: \"{value}\")", ex);
         }
     }
     
     private string Get(string key)
     {
         return _configuration[key] ?? throw new ArgumentNullException(key, $"{key} is not set in configuration");
-    }
-    
-    private string Get(string key, string defaultValue)
-    {
-        return _configuration[key] ?? defaultValue;
     }
 }
