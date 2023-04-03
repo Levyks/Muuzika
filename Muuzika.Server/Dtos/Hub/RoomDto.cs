@@ -1,4 +1,5 @@
 ﻿using Muuzika.Server.Enums.Room;
+using Muuzika.Server.Models;
 
 namespace Muuzika.Server.Dtos.Hub;
 
@@ -6,6 +7,6 @@ public record RoomDto(
     string Code,
     string LeaderUsername,
     RoomStatus Status,
-    RoomPossibleRoundTypes PossibleRoundTypes,
-    IEnumerable<PlayerDto> Players
+    IEnumerable<PlayerDto> Players,
+    RoomOptions Options
 );

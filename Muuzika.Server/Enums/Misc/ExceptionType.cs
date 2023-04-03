@@ -13,6 +13,8 @@ public enum ExceptionType
     NoTokenProvided,
     InvalidToken,
     PlayerNotFound,
+    LeaderOnlyAction,
+    CannotKickLeader,
     #endregion
 
     #region Both

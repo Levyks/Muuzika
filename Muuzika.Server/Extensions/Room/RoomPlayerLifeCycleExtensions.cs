@@ -1,24 +1,24 @@
-﻿namespace Muuzika.Server.Extensions.Room;
+﻿using Muuzika.Server.Models;
+
+namespace Muuzika.Server.Extensions.Room;
 
 public static class RoomPlayerLifeCycleExtensions
 {
-    public static void HandlePlayerConnection(this Models.Room room, Models.Player player)
+    public static void HandlePlayerConnection(this Models.Room room, Player player)
     {
         room.Logger.Information("Player {Username} connected", player.Username);
         room.CancelPlayerRemovalScheduleIfSet(player);
-        player.IsConnected = true;
         room.WatchTask(room.ToAllExcept(player).PlayerIsConnectedChanged(player.Username, player.IsConnected));
     }
     
-    public static void HandlePlayerDisconnection(this Models.Room room, Models.Player player)
+    public static void HandlePlayerDisconnection(this Models.Room room, Player player)
     {
         room.Logger.Information("Player {Username} disconnected", player.Username);
-        player.IsConnected = false;
         room.WatchTask(room.ToAllExcept(player).PlayerIsConnectedChanged(player.Username, player.IsConnected));
         room.SchedulePlayerRemoval(player);
     }
 
-    public static void SchedulePlayerRemoval(this Models.Room room, Models.Player player)
+    public static void SchedulePlayerRemoval(this Models.Room room, Player player)
     {        
         var delay = room.ConfigProvider.DelayDisconnectedPlayerRemoval;
      
@@ -31,7 +31,7 @@ public static class RoomPlayerLifeCycleExtensions
         }, delay);
     }
     
-    private static void CancelPlayerRemovalScheduleIfSet(this Models.Room room, Models.Player player)
+    private static void CancelPlayerRemovalScheduleIfSet(this Models.Room room, Player player)
     {
         if (player.DisconnectedPlayerRemovalCancellationTokenSource == null) return;
         
@@ -40,6 +40,13 @@ public static class RoomPlayerLifeCycleExtensions
         room.CancellationTokenSources.Remove(player.DisconnectedPlayerRemovalCancellationTokenSource);
         player.DisconnectedPlayerRemovalCancellationTokenSource.Dispose();
         player.DisconnectedPlayerRemovalCancellationTokenSource = null;
+    }
+    
+    public static void SetOptions(this Models.Room room, RoomOptions options)
+    {
+        room.Options = options;
+        room.Logger.Information("Room options set to {@Options}", options);
+        room.WatchTask(room.ToAll().RoomOptionsChanged(options));
     }
     
 }

@@ -1,13 +1,9 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using Muuzika.Server.Dtos.Gateway;
-using System.Text.Json;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Moq;
-using Muuzika.Server.Providers.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 using Muuzika.Server.Dtos.Hub;
+using Muuzika.Server.Enums.Misc;
 using Muuzika.Server.Enums.Room;
+using Muuzika.Server.Models;
 using Muuzika.ServerTests.E2E.Helpers;
 using Muuzika.ServerTests.E2E.Helpers.Extensions;
 
@@ -108,5 +104,83 @@ public class RoomE2ETests: BaseE2ETest
         await leaderChangedTcs.Task;
         
         Assert.That(leaveIssuedAt, Is.LessThan(leaderChangedTcs.Task.Result));
+    }
+    
+    [Test]
+    public async Task LeaderShouldBeAbleToKickPlayer()
+    {
+        var (roomCode, leaderHubConnection) = await this.CreateRoomAndConnect("leader");
+
+        const string playerUsername = "player1";
+        
+        var playerHubConnection = await this.JoinRoomAndConnect(roomCode, playerUsername);
+        
+        var connectionClosedTcs = new TaskCompletionSource<DateTime>();
+        playerHubConnection.Closed += _ =>
+        {
+            connectionClosedTcs.SetResult(DateTime.UtcNow);
+            return Task.CompletedTask;
+        };
+
+        var kickIssuedAt = DateTime.UtcNow;
+        
+        var result = await leaderHubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", playerUsername);
+        
+        Assert.That(result.Success, Is.True);
+        
+        await connectionClosedTcs.Task;
+        
+        Assert.That(kickIssuedAt, Is.LessThan(connectionClosedTcs.Task.Result));
+    }
+    
+    [Test]
+    public async Task LeaderShouldNotBeAbleToKickHimself()
+    {
+        var (_, leaderHubConnection) = await this.CreateRoomAndConnect("leader");
+
+        var result = await leaderHubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", "leader");
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Exception, Is.Not.Null);
+            Assert.That(result.Exception?.Type, Is.EqualTo(ExceptionType.CannotKickLeader));
+        });
+    }
+
+    [Test]
+    public async Task LeaderShouldBeAbleToChangeOptions()
+    {
+        var (roomCode, leaderHubConnection) = await this.CreateRoomAndConnect("leader");
+        
+        const string playerUsername = "player1";
+        
+        var playerHubConnection = await this.JoinRoomAndConnect(roomCode, playerUsername);
+        
+        var newOptions = new RoomOptions(
+            maxPlayersCount: 32,
+            possibleRoundTypes: RoomPossibleRoundTypes.Song,
+            roundsCount: 3,
+            roundDuration: TimeSpan.FromSeconds(20)
+        );
+        
+        var optionsChangedTcs = new TaskCompletionSource<DateTime>();
+
+        playerHubConnection.On<RoomOptions>("RoomOptionsChanged", options => {
+            Assert.Multiple(() =>
+            {
+                Assert.That(options.MaxPlayersCount, Is.EqualTo(newOptions.MaxPlayersCount));
+                Assert.That(options.PossibleRoundTypes, Is.EqualTo(newOptions.PossibleRoundTypes));
+                Assert.That(options.RoundsCount, Is.EqualTo(newOptions.RoundsCount));
+                Assert.That(options.RoundDuration, Is.EqualTo(newOptions.RoundDuration));
+            });
+            optionsChangedTcs.SetResult(DateTime.UtcNow);
+        });
+        
+        var changeIssuedAt = DateTime.UtcNow;
+        await leaderHubConnection.InvokeAsync("SetOptions", newOptions);
+        
+        await optionsChangedTcs.Task;
+        
+        Assert.That(changeIssuedAt, Is.LessThan(optionsChangedTcs.Task.Result));
     }
 }

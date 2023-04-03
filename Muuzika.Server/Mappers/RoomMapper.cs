@@ -21,8 +21,8 @@ public class RoomMapper: IRoomMapper
             Code: room.Code,
             LeaderUsername: room.Leader.Username,
             Status: room.Status,
-            PossibleRoundTypes: room.PossibleRoundTypes,
-            Players: room.GetPlayers().Select(_playerMapper.ToDto)
+            Players: room.GetPlayers().Select(_playerMapper.ToDto),
+            Options: room.Options
         );
     }
 

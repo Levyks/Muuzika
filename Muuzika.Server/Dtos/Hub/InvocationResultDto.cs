@@ -1,5 +1,4 @@
 ﻿using Muuzika.Server.Dtos.Misc;
-using Muuzika.Server.Exceptions;
 
 namespace Muuzika.Server.Dtos.Hub;
 

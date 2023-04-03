@@ -39,12 +39,25 @@ public class RoomHub: Hub<IRoomHubClient>
         return null;
     });
     
+    public InvocationResultDto<object?> SetOptions(RoomOptions options) => WrapLeaderOnlyInvocation<object?>(() =>
+    {
+        Room.SetOptions(options);
+        return null;
+    });
+    
+    public InvocationResultDto<object?> KickPlayer(string username) => WrapLeaderOnlyInvocation<object?>(() =>
+    {
+        Room.KickPlayer(username);
+        return null;
+    });
+
+
     #region Lifecycle
     public override async Task OnConnectedAsync()
     {
         var player = this.ParseTokenAndGetPlayer();
         
-        player.ConnectionId = Context.ConnectionId;
+        player.HubContext = Context;
         Context.Items.Add("player", player);
         
         await Groups.AddToGroupAsync(Context.ConnectionId, Room.Code);
@@ -55,7 +68,9 @@ public class RoomHub: Hub<IRoomHubClient>
     
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        Player.ConnectionId = null;
+        if (Player.HubContext == null) return base.OnDisconnectedAsync(exception);
+        
+        Player.HubContext = null;
         Room.HandlePlayerDisconnection(Player);
         
         return base.OnDisconnectedAsync(exception);
@@ -96,5 +111,17 @@ public class RoomHub: Hub<IRoomHubClient>
             return new InvocationResultDto<T>(false, default, _exceptionMapper.ToDto(baseException));
         }
     }
+    
+    private InvocationResultDto<T> WrapLeaderOnlyInvocation<T>(Func<T> func) => WrapInvocation(() =>
+    {
+        if (Room.Leader != Player) throw new LeaderOnlyActionException();
+        return func();
+    });
+    
+    private async Task<InvocationResultDto<T>> WrapLeaderOnlyInvocationAsync<T>(Func<Task<T>> func) => await WrapInvocationAsync(() =>
+    {
+        if (Room.Leader != Player) throw new LeaderOnlyActionException();
+        return func();
+    });
     #endregion
 }

@@ -24,6 +24,7 @@ public class RoomController : ControllerBase
     [HttpPost("{roomCode}")]
     public Task<RoomCreatedOrJoinedDto> JoinRoom([FromRoute] string roomCode, [FromBody] CreateOrJoinRoomDto joinRoomDto)
     {
+        Console.WriteLine($"Joining room {roomCode}");
         return _roomService.JoinRoom(roomCode, joinRoomDto);
     }
     

@@ -6,7 +6,7 @@ public static class RoomHubExtensions
 {
     public static IRoomHubClient? To(this Models.Room room, Models.Player player)
     {
-        return player.ConnectionId == null ? null : room.HubContext.Clients.Client(player.ConnectionId);
+        return player.HubContext == null ? null : room.HubContext.Clients.Client(player.HubContext.ConnectionId);
     }
     public static IRoomHubClient ToAll(this Models.Room room)
     {
@@ -15,7 +15,13 @@ public static class RoomHubExtensions
     
     public static IRoomHubClient ToAllExcept(this Models.Room room, Models.Player player)
     {
-        return player.ConnectionId == null ? room.ToAll() : room.HubContext.Clients.GroupExcept(room.Code, new [] { player.ConnectionId });
+        return player.HubContext == null ? room.ToAll() : room.HubContext.Clients.GroupExcept(room.Code, new [] { player.HubContext.ConnectionId });
+    }
+    
+    public static void DisconnectPlayer(this Models.Room room, Models.Player player)
+    {
+        player.HubContext?.Abort();
+        player.HubContext = null;
     }
     
 }

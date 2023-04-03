@@ -17,7 +17,7 @@ public sealed class Room: IDisposable
     public readonly string Code;
     public Player Leader { get; set; }
     public RoomStatus Status { get; set; } = RoomStatus.InLobby;
-    public RoomPossibleRoundTypes PossibleRoundTypes { get; set; } = RoomPossibleRoundTypes.Both;
+    public RoomOptions Options { get; set; }
     public ImmutableArray<Round>? Rounds { get; set; }
     
     internal readonly Dictionary<string, Player> PlayersDictionary = new();
@@ -46,8 +46,10 @@ public sealed class Room: IDisposable
         ConfigProvider = serviceProvider.GetRequiredService<IConfigProvider>();
         RoomMapper = serviceProvider.GetRequiredService<IRoomMapper>();
         RandomFactory = serviceProvider.GetRequiredService<Func<Random>>();
-        
+
         _repository = repository;
+        
+        Options = RoomOptions.Default(ConfigProvider);
         
         Code = code;
         Leader = this.AddPlayer(leaderUsername);

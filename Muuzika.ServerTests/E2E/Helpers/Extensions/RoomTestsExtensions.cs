@@ -76,6 +76,11 @@ public static class RoomTestsExtensions
             Assert.That(room.Players.First().Username, Is.EqualTo(username));
             Assert.That(room.LeaderUsername, Is.EqualTo(username));
             Assert.That(room.Status, Is.EqualTo(RoomStatus.InLobby));
+            
+            Assert.That(room.Options.RoundDuration, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultRoundDuration));
+            Assert.That(room.Options.RoundsCount, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultRoundsCount));
+            Assert.That(room.Options.MaxPlayersCount, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultMaxPlayersCount));
+            Assert.That(room.Options.PossibleRoundTypes, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultPossibleRoundTypes));
                 
             Assert.That(player.Username, Is.EqualTo(username));
             Assert.That(player.Score, Is.EqualTo(0));
@@ -125,7 +130,6 @@ public static class RoomTestsExtensions
         Assert.Multiple(() =>
         {
             Assert.That(room.Code, Is.EqualTo(roomCode));
-            Assert.That(room.Status, Is.EqualTo(RoomStatus.InLobby));
             Assert.That(room.Players, Has.Exactly(1).Property("Username").EqualTo(username));
             
             Assert.That(player.Username, Is.EqualTo(username));

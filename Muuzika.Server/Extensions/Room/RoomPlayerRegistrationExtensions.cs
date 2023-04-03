@@ -32,7 +32,7 @@ public static class RoomPlayerRegistrationExtensions
         return room.FindPlayer(username) ?? throw new PlayerNotFoundException(room.Code, username);
     }
     
-    public static Player AddPlayer(this Models.Room room, Models.Player player)
+    public static Player AddPlayer(this Models.Room room, Player player)
     {
         if (room.CloseAfterLastPlayerLeftCancellationTokenSource != null)
             room.CancelCloseIfEmptySchedule();
@@ -56,6 +56,8 @@ public static class RoomPlayerRegistrationExtensions
         room.PlayersDictionary.Remove(player.Username);
         room.Logger.Information("Player {Username} left the room", player.Username);
         room.WatchTask(room.ToAll().PlayerLeft(player.Username));
+        
+        room.DisconnectPlayer(player);
 
         if (room.PlayersDictionary.Count == 0)
         {
@@ -65,6 +67,21 @@ public static class RoomPlayerRegistrationExtensions
         {
             room.SetLeader(room.GetRandomPlayer());
         }
+    }
+    
+    public static void KickPlayer(this Models.Room room, Player player)
+    {
+        if (room.Leader == player)
+            throw new CannotKickLeaderException();
+        
+        room.RemovePlayer(player);
+        room.WatchTask(room.ToAll().PlayerKicked(player.Username));
+    }
+    
+    public static void KickPlayer(this Models.Room room, string username)
+    {
+        var player = room.GetPlayer(username);
+        room.KickPlayer(player);
     }
     
     public static Player GetRandomPlayer(this Models.Room room)
