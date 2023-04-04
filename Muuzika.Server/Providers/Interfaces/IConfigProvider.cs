@@ -15,4 +15,13 @@ public interface IConfigProvider
     ushort RoomDefaultRoundsCount { get; }
     TimeSpan RoomDefaultRoundDuration { get; }
     ushort RoomDefaultMaxPlayersCount { get; }
+    
+    ushort RoomMinRoundsCount { get; }
+    ushort RoomMaxRoundsCount { get; }
+    
+    ushort RoomMinMaxPlayersCount { get; }
+    ushort RoomMaxMaxPlayersCount { get; }
+    
+    TimeSpan RoomMinRoundDuration { get; }
+    TimeSpan RoomMaxRoundDuration { get; }
 }

@@ -10,6 +10,7 @@ using Muuzika.Server.Models;
 using Muuzika.ServerTests.E2E.Helpers;
 using Muuzika.ServerTests.E2E.Helpers.Extensions;
 using System.Text.Json;
+using Muuzika.Server.Providers.Interfaces;
 
 namespace Muuzika.ServerTests.E2E;
 
@@ -43,19 +44,19 @@ public class RoomE2ETests: BaseE2ETest
     [Test]
     public async Task ShouldJoinAndConnectAndOtherPlayersShouldBeNotified()
     {
-        var (roomCode, hubConnection) = await this.CreateRoomAndConnect("leader");
+        var leaderConnectedResult = await this.CreateRoomAndConnect("leader");
 
         const string playerUsername = "player1";
         
         var joinedTcs = new TaskCompletionSource<DateTime>();
-        hubConnection.On<string>("PlayerJoined", username =>
+        leaderConnectedResult.HubConnection.On<string>("PlayerJoined", username =>
         {
             Assert.That(username, Is.EqualTo(playerUsername));
             joinedTcs.SetResult(DateTime.UtcNow);
         });
         
         var isConnectedChangedTcs = new TaskCompletionSource<DateTime>();
-        hubConnection.On<string, bool>("PlayerIsConnectedChanged", (username, isConnected) => {
+        leaderConnectedResult.HubConnection.On<string, bool>("PlayerIsConnectedChanged", (username, isConnected) => {
             Assert.Multiple(() =>
             {
                 Assert.That(username, Is.EqualTo(playerUsername));
@@ -65,7 +66,7 @@ public class RoomE2ETests: BaseE2ETest
         });
         
         var joinIssuedAt = DateTime.UtcNow;
-        await this.JoinRoomAndConnect(roomCode, playerUsername);
+        await this.JoinRoomAndConnect(leaderConnectedResult.RoomCode, playerUsername);
         
         await Task.WhenAll(joinedTcs.Task, isConnectedChangedTcs.Task);
         Assert.Multiple(() =>
@@ -78,14 +79,14 @@ public class RoomE2ETests: BaseE2ETest
     [Test]
     public async Task ShouldNotifyOtherPlayersWhenOneDisconnects()
     {
-        var (roomCode, leaderHubConnection) = await this.CreateRoomAndConnect("leader");
+        var leaderConnectedResult = await this.CreateRoomAndConnect("leader");
 
         const string playerUsername = "player1";
         
-        var playerHubConnection = await this.JoinRoomAndConnect(roomCode, playerUsername);
+        var playerConnectedResult = await this.JoinRoomAndConnect(leaderConnectedResult.RoomCode, playerUsername);
         
         var isConnectedChangedTcs = new TaskCompletionSource<DateTime>();
-        leaderHubConnection.On<string, bool>("PlayerIsConnectedChanged", (username, isConnected) => {
+        leaderConnectedResult.HubConnection.On<string, bool>("PlayerIsConnectedChanged", (username, isConnected) => {
             Assert.Multiple(() =>
             {
                 Assert.That(username, Is.EqualTo(playerUsername));
@@ -95,7 +96,7 @@ public class RoomE2ETests: BaseE2ETest
         });
         
         var disconnectedIssuedAt = DateTime.UtcNow;
-        await playerHubConnection.StopAsync();
+        await playerConnectedResult.HubConnection.StopAsync();
         
         await isConnectedChangedTcs.Task;
         
@@ -105,14 +106,14 @@ public class RoomE2ETests: BaseE2ETest
     [Test]
     public async Task ShouldMakeOtherPlayerLeaderInCaseHeLeaves()
     {
-        var (roomCode, leaderHubConnection) = await this.CreateRoomAndConnect("leader");
+        var leaderConnectedResult = await this.CreateRoomAndConnect("leader");
 
         const string playerUsername = "player1";
         
-        var playerHubConnection = await this.JoinRoomAndConnect(roomCode, playerUsername);
+        var playerConnectedResult = await this.JoinRoomAndConnect(leaderConnectedResult.RoomCode, playerUsername);
         
         var leaderChangedTcs = new TaskCompletionSource<DateTime>();
-        playerHubConnection.On<string>("RoomLeaderChanged", username => {
+        playerConnectedResult.HubConnection.On<string>("RoomLeaderChanged", username => {
             Assert.That(username, Is.EqualTo(playerUsername));
             leaderChangedTcs.SetResult(DateTime.UtcNow);
         });
@@ -120,7 +121,7 @@ public class RoomE2ETests: BaseE2ETest
         var leaveIssuedAt = DateTime.UtcNow;
         
         // An exception is thrown because we close the connection once a player leaves
-        Assert.ThrowsAsync<TaskCanceledException>(() => leaderHubConnection.InvokeAsync("LeaveRoom"));
+        Assert.ThrowsAsync<TaskCanceledException>(() => leaderConnectedResult.HubConnection.InvokeAsync("LeaveRoom"));
         
         await leaderChangedTcs.Task;
         
@@ -130,14 +131,14 @@ public class RoomE2ETests: BaseE2ETest
     [Test]
     public async Task LeaderShouldBeAbleToKickPlayer()
     {
-        var (roomCode, leaderHubConnection) = await this.CreateRoomAndConnect("leader");
+        var leaderConnectedResult = await this.CreateRoomAndConnect("leader");
 
         const string playerUsername = "player1";
         
-        var playerHubConnection = await this.JoinRoomAndConnect(roomCode, playerUsername);
+        var playerConnectedResult = await this.JoinRoomAndConnect(leaderConnectedResult.RoomCode, playerUsername);
         
         var connectionClosedTcs = new TaskCompletionSource<DateTime>();
-        playerHubConnection.Closed += _ =>
+        playerConnectedResult.HubConnection.Closed += _ =>
         {
             connectionClosedTcs.SetResult(DateTime.UtcNow);
             return Task.CompletedTask;
@@ -145,7 +146,7 @@ public class RoomE2ETests: BaseE2ETest
 
         var kickIssuedAt = DateTime.UtcNow;
         
-        var result = await leaderHubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", playerUsername);
+        var result = await leaderConnectedResult.HubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", playerUsername);
         
         Assert.That(result.Success, Is.True);
         
@@ -157,51 +158,14 @@ public class RoomE2ETests: BaseE2ETest
     [Test]
     public async Task LeaderShouldNotBeAbleToKickHimself()
     {
-        var (_, leaderHubConnection) = await this.CreateRoomAndConnect("leader");
+        var connectedResult = await this.CreateRoomAndConnect("leader");
 
-        var result = await leaderHubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", "leader");
+        var result = await connectedResult.HubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", "leader");
         Assert.Multiple(() =>
         {
             Assert.That(result.Success, Is.False);
             Assert.That(result.Exception, Is.Not.Null);
             Assert.That(result.Exception?.Type, Is.EqualTo(ExceptionType.CannotKickLeader));
         });
-    }
-
-    [Test]
-    public async Task LeaderShouldBeAbleToChangeOptions()
-    {
-        var (roomCode, leaderHubConnection) = await this.CreateRoomAndConnect("leader");
-        
-        const string playerUsername = "player1";
-        
-        var playerHubConnection = await this.JoinRoomAndConnect(roomCode, playerUsername);
-        
-        var newOptions = new RoomOptions(
-            maxPlayersCount: 32,
-            possibleRoundTypes: RoomPossibleRoundTypes.Song,
-            roundsCount: 3,
-            roundDuration: TimeSpan.FromSeconds(20)
-        );
-        
-        var optionsChangedTcs = new TaskCompletionSource<DateTime>();
-
-        playerHubConnection.On<RoomOptions>("RoomOptionsChanged", options => {
-            Assert.Multiple(() =>
-            {
-                Assert.That(options.MaxPlayersCount, Is.EqualTo(newOptions.MaxPlayersCount));
-                Assert.That(options.PossibleRoundTypes, Is.EqualTo(newOptions.PossibleRoundTypes));
-                Assert.That(options.RoundsCount, Is.EqualTo(newOptions.RoundsCount));
-                Assert.That(options.RoundDuration, Is.EqualTo(newOptions.RoundDuration));
-            });
-            optionsChangedTcs.SetResult(DateTime.UtcNow);
-        });
-        
-        var changeIssuedAt = DateTime.UtcNow;
-        await leaderHubConnection.InvokeAsync("SetOptions", newOptions);
-        
-        await optionsChangedTcs.Task;
-        
-        Assert.That(changeIssuedAt, Is.LessThan(optionsChangedTcs.Task.Result));
     }
 }

@@ -58,7 +58,7 @@ public static class RoomTestsExtensions
         return (responseDict["roomCode"], responseDict["token"]);
     }
     
-    public static async Task<(string, HubConnection)> CreateRoomAndConnect(this BaseE2ETest test, string username)
+    public static async Task<RoomConnectedResultDto> CreateRoomAndConnect(this BaseE2ETest test, string username)
     {
         var (roomCode, token) = await test.CreateRoom(username);
 
@@ -96,11 +96,16 @@ public static class RoomTestsExtensions
             Assert.That(player.Score, Is.EqualTo(0));
             Assert.That(player.IsConnected, Is.True);
         });
-        
-        return (roomCode, hubConnection);
+
+        return new RoomConnectedResultDto(
+            RoomCode: roomCode,
+            Token: token,
+            HubConnection: hubConnection,
+            ReceivedStateSync: result.Data
+        );
     }
     
-    public static async Task<HubConnection> JoinRoomAndConnect(this BaseE2ETest test, string roomCode, string username)
+    public static async Task<RoomConnectedResultDto> JoinRoomAndConnect(this BaseE2ETest test, string roomCode, string username)
     {
         const string captchaToken = "foo";
 
@@ -112,6 +117,9 @@ public static class RoomTestsExtensions
         var contentString = await response.Content.ReadAsStringAsync();
         var responseDict = JsonSerializer.Deserialize<Dictionary<string, string>>(contentString);
         
+        Assert.That(responseDict, Is.Not.Null);
+        if (responseDict == null) throw new Exception("We should not be here");
+        
         Assert.Multiple(() =>
         {
             Assert.That(responseDict?.GetValueOrDefault("token"), Is.Not.Null);
@@ -119,7 +127,8 @@ public static class RoomTestsExtensions
             Assert.That(responseDict?.GetValueOrDefault("roomCode"), Is.EqualTo(roomCode));
         });
 
-        var hubConnection = test.CreateHubConnection(responseDict?["token"]);
+        var token = responseDict["token"];
+        var hubConnection = test.CreateHubConnection(token);
 
         await hubConnection.StartAsync();
         
@@ -146,7 +155,12 @@ public static class RoomTestsExtensions
             Assert.That(player.IsConnected, Is.True);
         });
         
-        return hubConnection;
+        return new RoomConnectedResultDto(
+            RoomCode: roomCode,
+            Token: token,
+            HubConnection: hubConnection,
+            ReceivedStateSync: result.Data
+        );
     }
     
     public static BaseExceptionDto ParseHubException(this BaseE2ETest test, HubException ex)

@@ -5,7 +5,7 @@
   &lt;Assembly Path="C:\Users\marci\.nuget\packages\bcrypt.net-next\4.0.3\lib\net6.0\BCrypt.Net-Next.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\marci\.nuget\packages\nodatime\3.1.9\lib\net6.0\NodaTime.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\marci\AppData\Local\JetBrains\Rider2022.3\resharper-host\temp\Rider\vAny\CoverageData\_Muuzika.-592631041\Snapshot\snapshot.utdcvr</s:String>
+	
 	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ac7a4fa1_002D83c5_002D444c_002D8629_002D6d412fd09ea9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestHash" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Project Location="C:\Users\marci\Documents\Codes\dotnet\Muuzika\Muuzika.ServerTests" Presentation="&amp;lt;Muuzika.ServerTests&amp;gt;" /&gt;&#xD;

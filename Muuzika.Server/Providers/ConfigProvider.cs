@@ -10,6 +10,7 @@ public class ConfigProvider: IConfigProvider
     public string JwtKey { get; }
     public string JwtIssuer { get; }
     public string JwtAudience { get; }
+    
     public TimeSpan DelayCloseRoomAfterLastPlayerLeft { get; }
     public TimeSpan DelayDisconnectedPlayerRemoval { get; }
     
@@ -18,6 +19,15 @@ public class ConfigProvider: IConfigProvider
     public TimeSpan RoomDefaultRoundDuration { get; }
     public ushort RoomDefaultMaxPlayersCount { get; }
     
+    public ushort RoomMinRoundsCount { get; }
+    public ushort RoomMaxRoundsCount { get; }
+    
+    public ushort RoomMinMaxPlayersCount { get; }
+    public ushort RoomMaxMaxPlayersCount { get; }
+    
+    public TimeSpan RoomMinRoundDuration { get; }
+    public TimeSpan RoomMaxRoundDuration { get; }
+    
     public ConfigProvider(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -25,12 +35,23 @@ public class ConfigProvider: IConfigProvider
         JwtKey = Get("Jwt:Key");
         JwtIssuer = Get("Jwt:Issuer");
         JwtAudience = Get("Jwt:Audience");
+        
         DelayCloseRoomAfterLastPlayerLeft = GetTimeSpan("Room:DelayCloseRoomAfterLastPlayerLeft");
         DelayDisconnectedPlayerRemoval = GetTimeSpan("Room:DelayDisconnectedPlayerRemoval");
+        
         RoomDefaultPossibleRoundTypes = GetEnum<RoomPossibleRoundTypes>("Room:DefaultPossibleRoundTypes");
         RoomDefaultRoundsCount = GetUshort("Room:DefaultRoundsCount");
         RoomDefaultRoundDuration = GetTimeSpan("Room:DefaultRoundDuration");
         RoomDefaultMaxPlayersCount = GetUshort("Room:DefaultMaxPlayersCount");
+        
+        RoomMinRoundsCount = GetUshort("Room:MinRoundsCount");
+        RoomMaxRoundsCount = GetUshort("Room:MaxRoundsCount");
+        
+        RoomMinMaxPlayersCount = GetUshort("Room:MinMaxPlayersCount");
+        RoomMaxMaxPlayersCount = GetUshort("Room:MaxMaxPlayersCount");
+        
+        RoomMinRoundDuration = GetTimeSpan("Room:MinRoundDuration");
+        RoomMaxRoundDuration = GetTimeSpan("Room:MaxRoundDuration");
     }
     
     private T GetEnum<T>(string key) where T: Enum
