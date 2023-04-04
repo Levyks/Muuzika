@@ -12,13 +12,24 @@ public class ConfigProviderTests
     private const string JwtKey = "JwtKey";
     private const string JwtIssuer = "JwtIssuer";
     private const string JwtAudience = "JwtAudience";
+    
     private const string DelayCloseRoomAfterLastPlayerLeft = "00:00:10";
     private const string DelayDisconnectedPlayerRemoval = "00:00:10";
+    
     private const string RoomDefaultPossibleRoundTypes = "Both";
     private const string RoomDefaultRoundsCount = "10";
     private const string RoomDefaultRoundDuration = "00:00:10";
     private const string RoomDefaultMaxPlayersCount = "10";
     
+    private const string RoomMinRoundsCount = "1";
+    private const string RoomMaxRoundsCount = "20";
+    
+    private const string RoomMinMaxPlayersCount = "1";
+    private const string RoomMaxMaxPlayersCount = "20";
+    
+    private const string RoomMinRoundDuration = "00:00:10";
+    private const string RoomMaxRoundDuration = "00:00:10";
+
     [SetUp]
     public void Setup()
     {
@@ -27,12 +38,23 @@ public class ConfigProviderTests
         _configurationMock.Setup(x => x["Jwt:Key"]).Returns(JwtKey);
         _configurationMock.Setup(x => x["Jwt:Issuer"]).Returns(JwtIssuer);
         _configurationMock.Setup(x => x["Jwt:Audience"]).Returns(JwtAudience);
+        
         _configurationMock.Setup(x => x["Room:DelayCloseRoomAfterLastPlayerLeft"]).Returns(DelayCloseRoomAfterLastPlayerLeft);
         _configurationMock.Setup(x => x["Room:DelayDisconnectedPlayerRemoval"]).Returns(DelayDisconnectedPlayerRemoval);
+        
         _configurationMock.Setup(x => x["Room:DefaultPossibleRoundTypes"]).Returns(RoomDefaultPossibleRoundTypes);
         _configurationMock.Setup(x => x["Room:DefaultRoundsCount"]).Returns(RoomDefaultRoundsCount);
         _configurationMock.Setup(x => x["Room:DefaultRoundDuration"]).Returns(RoomDefaultRoundDuration);
         _configurationMock.Setup(x => x["Room:DefaultMaxPlayersCount"]).Returns(RoomDefaultMaxPlayersCount);
+        
+        _configurationMock.Setup(x => x["Room:MinRoundsCount"]).Returns(RoomMinRoundsCount);
+        _configurationMock.Setup(x => x["Room:MaxRoundsCount"]).Returns(RoomMaxRoundsCount);
+        
+        _configurationMock.Setup(x => x["Room:MinMaxPlayersCount"]).Returns(RoomMinMaxPlayersCount);
+        _configurationMock.Setup(x => x["Room:MaxMaxPlayersCount"]).Returns(RoomMaxMaxPlayersCount);
+        
+        _configurationMock.Setup(x => x["Room:MinRoundDuration"]).Returns(RoomMinRoundDuration);
+        _configurationMock.Setup(x => x["Room:MaxRoundDuration"]).Returns(RoomMaxRoundDuration);
     }
     
     [Test]
@@ -45,12 +67,23 @@ public class ConfigProviderTests
             Assert.That(configProvider.JwtKey, Is.EqualTo(JwtKey));
             Assert.That(configProvider.JwtIssuer, Is.EqualTo(JwtIssuer));
             Assert.That(configProvider.JwtAudience, Is.EqualTo(JwtAudience));
+            
             Assert.That(configProvider.DelayCloseRoomAfterLastPlayerLeft, Is.EqualTo(TimeSpan.Parse(DelayCloseRoomAfterLastPlayerLeft)));
             Assert.That(configProvider.DelayDisconnectedPlayerRemoval, Is.EqualTo(TimeSpan.Parse(DelayDisconnectedPlayerRemoval)));
+            
             Assert.That(configProvider.RoomDefaultPossibleRoundTypes, Is.EqualTo(Enum.Parse<RoomPossibleRoundTypes>(RoomDefaultPossibleRoundTypes)));
             Assert.That(configProvider.RoomDefaultRoundsCount, Is.EqualTo(ushort.Parse(RoomDefaultRoundsCount)));
             Assert.That(configProvider.RoomDefaultRoundDuration, Is.EqualTo(TimeSpan.Parse(RoomDefaultRoundDuration)));
             Assert.That(configProvider.RoomDefaultMaxPlayersCount, Is.EqualTo(ushort.Parse(RoomDefaultMaxPlayersCount)));
+            
+            Assert.That(configProvider.RoomMinRoundsCount, Is.EqualTo(ushort.Parse(RoomMinRoundsCount)));
+            Assert.That(configProvider.RoomMaxRoundsCount, Is.EqualTo(ushort.Parse(RoomMaxRoundsCount)));
+            
+            Assert.That(configProvider.RoomMinMaxPlayersCount, Is.EqualTo(ushort.Parse(RoomMinMaxPlayersCount)));
+            Assert.That(configProvider.RoomMaxMaxPlayersCount, Is.EqualTo(ushort.Parse(RoomMaxMaxPlayersCount)));
+            
+            Assert.That(configProvider.RoomMinRoundDuration, Is.EqualTo(TimeSpan.Parse(RoomMinRoundDuration)));
+            Assert.That(configProvider.RoomMaxRoundDuration, Is.EqualTo(TimeSpan.Parse(RoomMaxRoundDuration)));
         });
     }
     
