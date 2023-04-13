@@ -1,6 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.SignalR;
+using Muuzika.Server.Auth;
 using Muuzika.Server.Filters;
 using Muuzika.Server.Hubs;
 using Muuzika.Server.Mappers;
@@ -12,105 +15,144 @@ using Muuzika.Server.Repositories.Interfaces;
 using Muuzika.Server.Services;
 using Muuzika.Server.Services.Interfaces;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 using Serilog.Templates;
+using ILogger = Serilog.ILogger;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console(new ExpressionTemplate(
-        "[{@t:HH:mm:ss} {@l:u3}" +
-        "{#if SourceContext is not null} {Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}{#end}"+ 
-        "{#if AdditionalSourceIdentifier is not null}:{AdditionalSourceIdentifier}{#end}" +
-        "] {@m}\n{@x}"))
-    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-    .CreateLogger();
+namespace Muuzika.Server;
 
-try
+internal class Program
 {
-    var builder = WebApplication.CreateBuilder(args);
-    builder.Host.UseSerilog();
+    private static readonly Logger Logger = new LoggerConfiguration()
+        .WriteTo.Console(new ExpressionTemplate(
+            "[{@t:HH:mm:ss} {@l:u3}" +
+            "{#if SourceContext is not null} {Substring(SourceContext, LastIndexOf(SourceContext, '.') + 1)}{#end}"+ 
+            "{#if AdditionalSourceIdentifier is not null}:{AdditionalSourceIdentifier}{#end}" +
+            "] {@m}\n{@x}"))
+        .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+        .CreateLogger();
     
-    var jsonSerializerOptions = new JsonSerializerOptions
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters = { new JsonStringEnumConverter() }
     };
     
+    private static void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers(options =>
+                {
+                    options.Filters.Add(new BaseExceptionFilter());
+                })
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonSerializerOptions.PropertyNamingPolicy;
+                    JsonSerializerOptions.Converters.ToList().ForEach(options.JsonSerializerOptions.Converters.Add);
+                });
+            
+        services.AddSignalR(options =>
+                {
+                    options.AddFilter<HubExceptionFilter>();    
+                })
+                .AddJsonProtocol(options =>
+                {
+                    options.PayloadSerializerOptions = JsonSerializerOptions;
+                });
 
-    builder.Services.AddControllers(options =>
-        {
-            options.Filters.Add(new BaseExceptionFilter());
-        })
-        .AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.PropertyNamingPolicy = jsonSerializerOptions.PropertyNamingPolicy;
-            foreach (var converter in jsonSerializerOptions.Converters)
+        services.AddCors(options =>
             {
-                options.JsonSerializerOptions.Converters.Add(converter);
-            }
-        });
-    builder.Services.AddSignalR()
-        .AddJsonProtocol(options =>
-        {
-            options.PayloadSerializerOptions = jsonSerializerOptions;
-        });
+                options.AddDefaultPolicy(corsPolicyBuilder =>
+                {
+                    corsPolicyBuilder.AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .WithOrigins("http://127.0.0.1:5173");
+                });
+            });
     
-    builder.Services.AddCors(options =>
-    {
-        options.AddDefaultPolicy(corsPolicyBuilder =>
-        {
-            corsPolicyBuilder.AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .WithOrigins("http://127.0.0.1:5173");
-        });
-    });
-        
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+        services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "MuuzikaAuthentication";
+                })
+                .AddScheme<AuthenticationSchemeOptions, MuuzikaAuthenticationHandler>("MuuzikaAuthentication", null);
 
-    builder.Services.AddSingleton(jsonSerializerOptions);
-    builder.Services.AddSingleton(new JwtSecurityTokenHandler());
-
-    builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-    builder.Services.AddSingleton<IConfigProvider, ConfigProvider>();
-    builder.Services.AddSingleton<IRandomProvider, RandomProvider>();
-    
-    builder.Services.AddSingleton<IPlayerMapper, PlayerMapper>();
-    builder.Services.AddSingleton<IRoomMapper, RoomMapper>();
-    builder.Services.AddSingleton<IExceptionMapper, ExceptionMapper>();
-    
-    builder.Services.AddSingleton<IRoomRepository, RoomRepository>();
+        services.AddAuthorization(LeaderOnlyPolicy.Register);
         
-    builder.Services.AddSingleton<IRoomService, RoomService>();
-    builder.Services.AddSingleton<IJwtService, JwtService>();
-    // TODO: Replace with real captcha service
-    builder.Services.AddSingleton<ICaptchaService, NoOpCaptchaService>();
-    
-    var app = builder.Build();     
-    
-    app.UseSerilogRequestLogging();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
         
-    if (app.Environment.IsDevelopment())
+        RegisterDependencies(services);
+    }
+    
+    private static void RegisterDependencies(IServiceCollection services)
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+        services.AddTransient<IHttpService, HttpService>();
+        
+        services.AddSingleton(new JwtSecurityTokenHandler());
+        services.AddSingleton(JsonSerializerOptions);
+            
+        services.AddSingleton<ILogger>(Logger);
+
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        services.AddSingleton<IConfigProvider, ConfigProvider>();
+        services.AddSingleton<IRandomProvider, RandomProvider>();
+
+        services.AddSingleton<IPlayerMapper, PlayerMapper>();
+        services.AddSingleton<IRoomMapper, RoomMapper>();
+        services.AddSingleton<IExceptionMapper, ExceptionMapper>();
+        services.AddSingleton<ISpotifyMapper, SpotifyMapper>();
+
+        services.AddSingleton<IRoomRepository, RoomRepository>();
+    
+        services.AddSingleton<IRoomService, RoomService>();
+        services.AddSingleton<IJwtService, JwtService>();
+        services.AddSingleton<IPlaylistFetcherService, SpotifyPlaylistFetcherService>();
+        // TODO: Replace with real captcha service
+        services.AddSingleton<ICaptchaService, NoOpCaptchaService>();
+
+        services.AddSingleton(services);
     }
 
-    app.UseHttpsRedirection();
-    app.UseRouting();
-    app.MapControllers();
-    app.MapHub<RoomHub>("/hub");
-    app.UseCors();
+    private static void ConfigureApp(WebApplication app)
+    {
+        app.UseSerilogRequestLogging();
+        
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
 
-    app.Run();
-}
-catch (Exception e)
-{
-    Log.Fatal(e, "Host terminated unexpectedly");
-}
-finally
-{
-    Log.CloseAndFlush();
+        app.UseHttpsRedirection();
+        app.UseRouting();
+        app.UseAuthorization();
+        app.MapControllers();
+        app.MapHub<RoomHub>("/hub");
+        app.UseCors();
+    }
+    
+    public static void Main(string[] args)
+    {
+        Log.Logger = Logger;
+
+        try
+        {
+            var builder = WebApplication.CreateBuilder(args);
+            builder.Host.UseSerilog();
+            ConfigureServices(builder.Services);
+            var app = builder.Build();
+            ConfigureApp(app);
+            app.Run();
+        }
+        catch (Exception e)
+        {
+            Log.Fatal(e, "Host terminated unexpectedly");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
+    }
 }

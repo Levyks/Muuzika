@@ -1,8 +1,8 @@
 ﻿using Muuzika.Server.Dtos.Gateway;
 using Muuzika.Server.Dtos.Hub;
-using Muuzika.Server.Extensions.Room;
 using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Models;
+using Muuzika.Server.Services.Interfaces;
 
 namespace Muuzika.Server.Mappers;
 
@@ -21,7 +21,7 @@ public class RoomMapper: IRoomMapper
             Code: room.Code,
             LeaderUsername: room.Leader.Username,
             Status: room.Status,
-            Players: room.GetPlayers().Select(_playerMapper.ToDto),
+            Players: room.ServiceProvider.GetRequiredService<IRoomPlayerService>().GetPlayers().Select(_playerMapper.ToDto),
             Options: room.Options
         );
     }
@@ -31,7 +31,7 @@ public class RoomMapper: IRoomMapper
         return new RoomCreatedOrJoinedDto(
             Username: player.Username,
             RoomCode: room.Code,
-            Token: room.GetTokenForPlayer(player)
+            Token: room.ServiceProvider.GetRequiredService<IRoomPlayerService>().GetTokenForPlayer(player)
         );
     }
     

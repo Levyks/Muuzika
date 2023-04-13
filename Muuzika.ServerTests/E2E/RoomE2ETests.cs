@@ -10,6 +10,8 @@ using Muuzika.Server.Models;
 using Muuzika.ServerTests.E2E.Helpers;
 using Muuzika.ServerTests.E2E.Helpers.Extensions;
 using System.Text.Json;
+using Microsoft.AspNetCore.SignalR;
+using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Providers.Interfaces;
 
 namespace Muuzika.ServerTests.E2E;
@@ -146,9 +148,7 @@ public class RoomE2ETests: BaseE2ETest
 
         var kickIssuedAt = DateTime.UtcNow;
         
-        var result = await leaderConnectedResult.HubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", playerUsername);
-        
-        Assert.That(result.Success, Is.True);
+        await leaderConnectedResult.HubConnection.InvokeAsync("KickPlayer", playerUsername);
         
         await connectionClosedTcs.Task;
         
@@ -160,12 +160,15 @@ public class RoomE2ETests: BaseE2ETest
     {
         var connectedResult = await this.CreateRoomAndConnect("leader");
 
-        var result = await connectedResult.HubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", "leader");
-        Assert.Multiple(() =>
+        try
         {
-            Assert.That(result.Success, Is.False);
-            Assert.That(result.Exception, Is.Not.Null);
-            Assert.That(result.Exception?.Type, Is.EqualTo(ExceptionType.CannotKickLeader));
-        });
+            await connectedResult.HubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", "leader");
+            Assert.Fail("Should not succeed");
+        }
+        catch (HubException ex)
+        {
+            var exceptionDto = ExceptionMapper.ParseHubException(ex);
+            Assert.That(exceptionDto.Type, Is.EqualTo(ExceptionType.CannotKickLeader));
+        }
     }
 }

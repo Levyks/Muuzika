@@ -1,10 +1,9 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Muuzika.Server.Attributes.Auth;
 using Muuzika.Server.Dtos.Hub;
 using Muuzika.Server.Exceptions;
-using Muuzika.Server.Extensions.Room;
-using Muuzika.Server.Hubs.Extensions;
 using Muuzika.Server.Hubs.Interfaces;
 using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Models;
@@ -13,6 +12,7 @@ using Muuzika.Server.Services.Interfaces;
 
 namespace Muuzika.Server.Hubs;
 
+[Authorize]
 public class RoomHub: Hub<IRoomHubClient>
 {
     public readonly IJwtService JwtService;
@@ -25,6 +25,12 @@ public class RoomHub: Hub<IRoomHubClient>
     private Player Player => Context.Items["player"] as Player ?? throw new Exception("Player not found in hub context");
     private Room Room => Player.Room;
     
+    private IRoomPlayerService? _playerService;
+    private IRoomPlayerService PlayerService => _playerService ??= Room.ServiceProvider.GetRequiredService<IRoomPlayerService>();
+
+    private IRoomLifeCycleService? _lifeCycleService;
+    private IRoomLifeCycleService LifeCycleService => _lifeCycleService ??= Room.ServiceProvider.GetRequiredService<IRoomLifeCycleService>();
+    
     public RoomHub(IJwtService jwtService, IRoomRepository roomRepository, IRoomMapper roomMapper, IExceptionMapper exceptionMapper, JsonSerializerOptions jsonSerializerOptions)
     {
         JwtService = jwtService;
@@ -34,26 +40,25 @@ public class RoomHub: Hub<IRoomHubClient>
         JsonSerializerOptions = jsonSerializerOptions;
     }
     
-    public InvocationResultDto<StateSyncDto> SyncAll() => WrapInvocation(() => _roomMapper.ToStateSyncDto(Room, Player));
+    public StateSyncDto SyncAll() => _roomMapper.ToStateSyncDto(Room, Player);
 
-    public InvocationResultDto<object?> LeaveRoom() => WrapInvocation<object?>(() =>
+    public void LeaveRoom() 
     {
-        Room.RemovePlayer(Player);
+        PlayerService.RemovePlayer(Player);
         Context.Abort();
-        return null;
-    });
+    }
     
-    public InvocationResultDto<object?> SetOptions(RoomOptions options) => WrapLeaderOnlyInvocation<object?>(() =>
+    [LeaderOnly]
+    public void SetOptions(RoomOptions options) 
     {
-        Room.SetOptions(options);
-        return null;
-    });
+        LifeCycleService.SetOptions(options);
+    }
     
-    public InvocationResultDto<object?> KickPlayer(string username) => WrapLeaderOnlyInvocation<object?>(() =>
+    [LeaderOnly]
+    public void KickPlayer(string username) 
     {
-        Room.KickPlayer(username);
-        return null;
-    });
+        PlayerService.KickPlayer(username);
+    }
 
 
     #region Lifecycle
@@ -61,20 +66,22 @@ public class RoomHub: Hub<IRoomHubClient>
     {
         try
         {
-            var player = this.ParseTokenAndGetPlayer();
+            object? playerObj = null;
+            Context.GetHttpContext()?.Items.TryGetValue("player", out playerObj);
+            if (playerObj is not Player player)
+                throw new UnknownException();
 
             player.HubContext = Context;
             Context.Items.Add("player", player);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, Room.Code);
-            Room.HandlePlayerConnection(player);
+            PlayerService.HandlePlayerConnection(player);
 
             await base.OnConnectedAsync();
         }
-        catch (BaseException ex)
+        catch (Exception ex)
         {
-            var stringifiedEx = JsonSerializer.Serialize(_exceptionMapper.ToDto(ex), JsonSerializerOptions);
-            throw new HubException($"$@{stringifiedEx}");
+            throw _exceptionMapper.ToHubException(ex);
         }
     }
     
@@ -83,57 +90,9 @@ public class RoomHub: Hub<IRoomHubClient>
         if (Player.HubContext == null) return base.OnDisconnectedAsync(exception);
         
         Player.HubContext = null;
-        Room.HandlePlayerDisconnection(Player);
+        PlayerService.HandlePlayerDisconnection(Player);
         
         return base.OnDisconnectedAsync(exception);
     }
-    #endregion
-
-    #region Wrappers
-    private InvocationResultDto<T> WrapInvocation<T>(Func<T> func)
-    {
-        try
-        {
-            return new InvocationResultDto<T>(true, func(), default);
-        } 
-        catch (Exception ex)
-        {
-            var baseException = ex as BaseException ?? new UnknownException();
-
-            if (baseException is UnknownException && Context.Items["room"] is Room room)
-                room.Logger.Error(ex, "Unknown exception in hub invocation");
-
-            return new InvocationResultDto<T>(false, default, _exceptionMapper.ToDto(baseException));
-        }
-    }
-    
-    private async Task<InvocationResultDto<T>> WrapInvocationAsync<T>(Func<Task<T>> func)
-    {
-        try
-        {
-            return new InvocationResultDto<T>(true, await func(), default);
-        } 
-        catch (Exception ex)
-        {
-            var baseException = ex as BaseException ?? new UnknownException();
-            
-            if (baseException is UnknownException && Context.Items["room"] is Room room)
-                room.Logger.Error(ex, "Unknown exception in hub invocation");
-            
-            return new InvocationResultDto<T>(false, default, _exceptionMapper.ToDto(baseException));
-        }
-    }
-    
-    private InvocationResultDto<T> WrapLeaderOnlyInvocation<T>(Func<T> func) => WrapInvocation(() =>
-    {
-        if (Room.Leader != Player) throw new LeaderOnlyActionException();
-        return func();
-    });
-    
-    private async Task<InvocationResultDto<T>> WrapLeaderOnlyInvocationAsync<T>(Func<Task<T>> func) => await WrapInvocationAsync(() =>
-    {
-        if (Room.Leader != Player) throw new LeaderOnlyActionException();
-        return func();
-    });
     #endregion
 }

@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Muuzika.Server;
 
-namespace Muuzika.ServerTests.E2E;
+namespace Muuzika.ServerTests.E2E.Helpers;
 
 internal class MockableMuuzikaWebApplicationFactory: WebApplicationFactory<Program>
 {

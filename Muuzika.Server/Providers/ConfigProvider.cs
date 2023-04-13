@@ -28,6 +28,9 @@ public class ConfigProvider: IConfigProvider
     public TimeSpan RoomMinRoundDuration { get; }
     public TimeSpan RoomMaxRoundDuration { get; }
     
+    public string SpotifyClientId { get; }
+    public string SpotifyClientSecret { get; }
+    
     public ConfigProvider(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -52,6 +55,9 @@ public class ConfigProvider: IConfigProvider
         
         RoomMinRoundDuration = GetTimeSpan("Room:MinRoundDuration");
         RoomMaxRoundDuration = GetTimeSpan("Room:MaxRoundDuration");
+        
+        SpotifyClientId = Get("Spotify:ClientId");
+        SpotifyClientSecret = Get("Spotify:ClientSecret");
     }
     
     private T GetEnum<T>(string key) where T: Enum
@@ -93,8 +99,13 @@ public class ConfigProvider: IConfigProvider
         }
     }
     
+    private string? GetOptional(string key)
+    {
+        return _configuration[key];
+    }
+    
     private string Get(string key)
     {
-        return _configuration[key] ?? throw new ArgumentNullException(key, $"{key} is not set in configuration");
+        return GetOptional(key) ?? throw new ArgumentNullException(key, $"{key} is not set in configuration");
     }
 }

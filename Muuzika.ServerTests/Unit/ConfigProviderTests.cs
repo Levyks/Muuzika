@@ -29,6 +29,9 @@ public class ConfigProviderTests
     
     private const string RoomMinRoundDuration = "00:00:10";
     private const string RoomMaxRoundDuration = "00:00:10";
+    
+    private const string SpotifyClientId = "SpotifyClientId";
+    private const string SpotifyClientSecret = "SpotifyClientSecret";
 
     [SetUp]
     public void Setup()
@@ -55,6 +58,9 @@ public class ConfigProviderTests
         
         _configurationMock.Setup(x => x["Room:MinRoundDuration"]).Returns(RoomMinRoundDuration);
         _configurationMock.Setup(x => x["Room:MaxRoundDuration"]).Returns(RoomMaxRoundDuration);
+        
+        _configurationMock.Setup(x => x["Spotify:ClientId"]).Returns(SpotifyClientId);
+        _configurationMock.Setup(x => x["Spotify:ClientSecret"]).Returns(SpotifyClientSecret);
     }
     
     [Test]
@@ -84,6 +90,9 @@ public class ConfigProviderTests
             
             Assert.That(configProvider.RoomMinRoundDuration, Is.EqualTo(TimeSpan.Parse(RoomMinRoundDuration)));
             Assert.That(configProvider.RoomMaxRoundDuration, Is.EqualTo(TimeSpan.Parse(RoomMaxRoundDuration)));
+            
+            Assert.That(configProvider.SpotifyClientId, Is.EqualTo(SpotifyClientId));
+            Assert.That(configProvider.SpotifyClientSecret, Is.EqualTo(SpotifyClientSecret));
         });
     }
     
@@ -97,6 +106,14 @@ public class ConfigProviderTests
     [TestCase("Room:DefaultRoundsCount")]
     [TestCase("Room:DefaultRoundDuration")]
     [TestCase("Room:DefaultMaxPlayersCount")]
+    [TestCase("Room:MinRoundsCount")]
+    [TestCase("Room:MaxRoundsCount")]
+    [TestCase("Room:MinMaxPlayersCount")]
+    [TestCase("Room:MaxMaxPlayersCount")]
+    [TestCase("Room:MinRoundDuration")]
+    [TestCase("Room:MaxRoundDuration")]
+    [TestCase("Spotify:ClientId")]
+    [TestCase("Spotify:ClientSecret")]
     public void ShouldThrowExceptionIfConfigIsMissing(string key)
     {
         _configurationMock.Setup(x => x[key]).Returns((string?)null);

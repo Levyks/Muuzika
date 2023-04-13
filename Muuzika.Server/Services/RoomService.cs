@@ -1,7 +1,6 @@
 ﻿using Muuzika.Server.Dtos.Gateway;
 using Muuzika.Server.Enums.Misc;
 using Muuzika.Server.Exceptions;
-using Muuzika.Server.Extensions.Room;
 using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Models;
 using Muuzika.Server.Repositories.Interfaces;
@@ -79,8 +78,10 @@ public class RoomService: IRoomService
         await ValidateCaptcha(CaptchaAction.JoinRoom, joinRoomDto);
 
         var room = _roomRepository.GetRoomByCode(roomCode);
+        
+        var roomPlayerService = room.ServiceProvider.GetRequiredService<IRoomPlayerService>();
 
-        var player = room.AddPlayer(joinRoomDto.Username);
+        var player = roomPlayerService.AddPlayer(joinRoomDto.Username);
         
         return _roomMapper.ToCreatedOrJoinedDto(room, player);
     }

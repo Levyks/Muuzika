@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 using Muuzika.Server.Enums.Room;
 using Muuzika.Server.Models;
 using Muuzika.ServerTests.E2E.Helpers;
@@ -45,6 +46,43 @@ public class RoomOptionsE2ETests: BaseE2ETest
         
         Assert.That(changeIssuedAt, Is.LessThan(optionsChangedTcs.Task.Result));
     }
+    
+    [Test]
+    public async Task NonLeaderShouldNotBeAbleToChangeOptions()
+    {
+        var leaderConnectedResult = await this.CreateRoomAndConnect("leader");
+        
+        const string playerUsername = "player1";
+        
+        var playerConnectedResult = await this.JoinRoomAndConnect(leaderConnectedResult.RoomCode, playerUsername);
+        
+        var newOptions = new RoomOptions(
+            maxPlayersCount: 32,
+            possibleRoundTypes: RoomPossibleRoundTypes.Song,
+            roundsCount: 3,
+            roundDuration: TimeSpan.FromSeconds(20)
+        );
+        
+        var optionsChangedTcs = new TaskCompletionSource();
+
+        leaderConnectedResult.HubConnection.On<RoomOptions>("RoomOptionsChanged", options => {
+            optionsChangedTcs.SetResult();
+        });
+
+        try
+        {
+            await playerConnectedResult.HubConnection.InvokeAsync("SetOptions", newOptions);
+        }
+        catch (HubException ex)
+        {
+            Assert.That(ex.Message, Is.EqualTo("Failed to invoke 'SetOptions' because user is unauthorized"));
+        }
+        
+        await Task.Delay(500);
+        
+        Assert.That(optionsChangedTcs.Task.IsCompleted, Is.False);
+    }
+
 
     [Test]
     public async Task NewOptionsShouldBeStoredAndSentInNextSyncAll()

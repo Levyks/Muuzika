@@ -11,6 +11,8 @@ public class Player
     public HubCallerContext? HubContext { get; set; }
     public bool IsConnected => HubContext != null;
     
+    public bool IsLeader => Room.Leader == this;
+    
     public CancellationTokenSource? DisconnectedPlayerRemovalCancellationTokenSource { get; set; }
     
     public Player(Room room, string username)

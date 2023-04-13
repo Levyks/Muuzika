@@ -24,4 +24,7 @@ public interface IConfigProvider
     
     TimeSpan RoomMinRoundDuration { get; }
     TimeSpan RoomMaxRoundDuration { get; }
+    
+    string SpotifyClientId { get; }
+    string SpotifyClientSecret { get; }
 }

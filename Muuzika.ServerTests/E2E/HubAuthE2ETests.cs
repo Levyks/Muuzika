@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using System.Net;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Muuzika.ServerTests.E2E.Helpers;
 using Muuzika.ServerTests.E2E.Helpers.Extensions;
@@ -11,55 +12,21 @@ public class HubAuthE2ETests: BaseE2ETest
     [Test]
     [TestCase(null)]
     [TestCase("")]
-    public async Task ShouldNotConnectWithMissingToken(string? token)
-    {
-        var hubConnection = this.CreateHubConnection(token);
-
-        var closedTcs = new TaskCompletionSource();
-        hubConnection.Closed += ex =>
-        {
-            Assert.That(ex, Is.Not.Null);
-            Assert.That(ex, Is.TypeOf<HubException>());
-            if (ex is not HubException hubException) throw new Exception("We should not be here");
-            
-            var baseException = this.ParseHubException(hubException);
-            Assert.That(baseException.Type, Is.EqualTo(ExceptionType.NoTokenProvided));
-            
-            closedTcs.SetResult();
-            return Task.CompletedTask;
-        };
-        
-        await hubConnection.StartAsync();
-
-        await closedTcs.Task;
-        
-        Assert.That(hubConnection.State, Is.EqualTo(HubConnectionState.Disconnected));
-    }
-    
-    [Test]
     [TestCase("forty-two")]
-    public async Task ShouldNotConnectWithInvalidToken(string token)
+    public async Task ShouldNotConnectWithMissingOrInvalidToken(string? token)
     {
         var hubConnection = this.CreateHubConnection(token);
 
-        var closedTcs = new TaskCompletionSource();
-        hubConnection.Closed += ex =>
+        try
         {
-            Assert.That(ex, Is.Not.Null);
-            Assert.That(ex, Is.TypeOf<HubException>());
-            if (ex is not HubException hubException) throw new Exception("We should not be here");
-            
-            var baseException = this.ParseHubException(hubException);
-            Assert.That(baseException.Type, Is.EqualTo(ExceptionType.InvalidToken));
-            
-            closedTcs.SetResult();
-            return Task.CompletedTask;
-        };
-        
-        await hubConnection.StartAsync();
+            await hubConnection.StartAsync();
+            Assert.Fail("Connection should not be established");
+        }
+        catch (HttpRequestException ex)
+        {
+            Assert.That(ex.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
 
-        await closedTcs.Task;
-        
         Assert.That(hubConnection.State, Is.EqualTo(HubConnectionState.Disconnected));
     }
 }

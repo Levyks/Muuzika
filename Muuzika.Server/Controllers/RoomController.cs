@@ -9,13 +9,15 @@ namespace Muuzika.Server.Controllers;
 public class RoomController : ControllerBase
 {
     private readonly IRoomService _roomService;
+    private readonly IPlaylistFetcherService _playlistFetcherService;
     
-    public RoomController(IRoomService roomService)
+    public RoomController(IRoomService roomService, IPlaylistFetcherService playlistFetcherService)
     {
         _roomService = roomService;
+        _playlistFetcherService = playlistFetcherService;
     }
 
-    [HttpPost(Name = "/")]
+    [HttpPost]
     public Task<RoomCreatedOrJoinedDto> CreateRoom([FromBody] CreateOrJoinRoomDto createRoomDto)
     {
         return _roomService.CreateRoom(createRoomDto);
@@ -26,5 +28,12 @@ public class RoomController : ControllerBase
     {
         Console.WriteLine($"Joining room {roomCode}");
         return _roomService.JoinRoom(roomCode, joinRoomDto);
+    }
+    
+    [HttpGet("playlist/{playlistId}")]
+    public async Task GetPlaylistInfo([FromRoute] string playlistId)
+    {
+        var playlist = await _playlistFetcherService.FetchPlaylistAsync(playlistId);
+        Console.WriteLine(playlist);
     }
 }

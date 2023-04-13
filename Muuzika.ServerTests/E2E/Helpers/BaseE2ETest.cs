@@ -1,5 +1,8 @@
-﻿using Moq;
+﻿using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Muuzika.Server.Enums.Room;
+using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Providers;
 using Muuzika.Server.Providers.Interfaces;
 
@@ -8,9 +11,13 @@ namespace Muuzika.ServerTests.E2E.Helpers;
 public abstract class BaseE2ETest
 {
     internal DateTime Now;
+    internal Mock<IRandomProvider> RandomProviderMock = null!;
     internal Mock<IConfigProvider> ConfigProviderMock = null!;
     internal Mock<IDateTimeProvider> DateTimeProviderMock = null!;
 
+    internal JsonSerializerOptions JsonSerializerOptions = null!;
+    internal IExceptionMapper ExceptionMapper = null!;
+    
     internal MockableMuuzikaWebApplicationFactory Factory = null!;
     private HttpClient? _client;
     internal HttpClient Client => _client ??= Factory.CreateClient();
@@ -19,6 +26,9 @@ public abstract class BaseE2ETest
     public void Setup()
     {
         Now = DateTime.UtcNow;
+        
+        RandomProviderMock = new Mock<IRandomProvider>();
+        RandomProviderMock.Setup(x => x.GetRandom()).Returns(new Random(42));
 
         DateTimeProviderMock = new Mock<IDateTimeProvider>();
         DateTimeProviderMock.Setup(x => x.GetNow()).Returns(Now);
@@ -36,9 +46,12 @@ public abstract class BaseE2ETest
         ConfigProviderMock.Setup(x => x.RoomDefaultRoundDuration).Returns(TimeSpan.FromSeconds(15));
         
         Factory = new MockableMuuzikaWebApplicationFactory()
-            .Mock(new RandomProvider(42))
+            .Mock(RandomProviderMock)
             .Mock(ConfigProviderMock)
             .Mock(DateTimeProviderMock);
+        
+        JsonSerializerOptions = Factory.Services.GetRequiredService<JsonSerializerOptions>();
+        ExceptionMapper = Factory.Services.GetRequiredService<IExceptionMapper>();
     }
     
     [TearDown]

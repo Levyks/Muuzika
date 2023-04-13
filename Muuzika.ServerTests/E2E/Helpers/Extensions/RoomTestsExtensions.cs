@@ -3,12 +3,10 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Muuzika.Server.Dtos.Gateway;
 using Muuzika.Server.Dtos.Hub;
-using Muuzika.Server.Dtos.Misc;
 using Muuzika.Server.Enums.Room;
 
 namespace Muuzika.ServerTests.E2E.Helpers.Extensions;
@@ -33,7 +31,7 @@ public static class RoomTestsExtensions
         return hubConnection;
     }
     
-    public static async Task<(string, string)> CreateRoom(this BaseE2ETest test, string username)
+    public static async Task<RoomCreatedOrJoinedDto> CreateRoom(this BaseE2ETest test, string username)
     {
         const string captchaToken = "foo";
 
@@ -43,45 +41,59 @@ public static class RoomTestsExtensions
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
         var contentString = await response.Content.ReadAsStringAsync();
-        var responseDict = JsonSerializer.Deserialize<Dictionary<string, string>>(contentString);
+        var roomCreatedOrJoinedDto = JsonSerializer.Deserialize<RoomCreatedOrJoinedDto>(contentString, test.JsonSerializerOptions);
         
-        Assert.That(responseDict, Is.Not.Null);
-        if (responseDict == null) throw new Exception("We should not be here");
+        Assert.That(roomCreatedOrJoinedDto, Is.Not.Null);
+        if (roomCreatedOrJoinedDto == null) throw new Exception("We should not be here");
         
         Assert.Multiple(() =>
         {
-            Assert.That(responseDict?.GetValueOrDefault("token"), Is.Not.Null);
-            Assert.That(responseDict?.GetValueOrDefault("username"), Is.EqualTo(username));
-            Assert.That(responseDict?.GetValueOrDefault("roomCode"), Is.Not.Null);
+            Assert.That(roomCreatedOrJoinedDto.Token, Is.Not.Null);
+            Assert.That(roomCreatedOrJoinedDto.Username, Is.EqualTo(username));
+            Assert.That(roomCreatedOrJoinedDto.RoomCode, Is.Not.Null);
         });
 
-        return (responseDict["roomCode"], responseDict["token"]);
+        return roomCreatedOrJoinedDto;
     }
     
-    public static async Task<RoomConnectedResultDto> CreateRoomAndConnect(this BaseE2ETest test, string username)
+    public static async Task<RoomConnectedResultDto> ConnectToRoom(this BaseE2ETest test, RoomCreatedOrJoinedDto roomCreatedOrJoinedDto)
     {
-        var (roomCode, token) = await test.CreateRoom(username);
-
-        var hubConnection = test.CreateHubConnection(token);
+        var hubConnection = test.CreateHubConnection(roomCreatedOrJoinedDto.Token);
 
         await hubConnection.StartAsync();
         
-        var result = await hubConnection.InvokeAsync<InvocationResultDto<StateSyncDto>>("SyncAll");
+        var stateSync = await hubConnection.InvokeAsync<StateSyncDto>("SyncAll");
         
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Success, Is.True);
-            Assert.That(result.Data, Is.Not.Null);
-        });
-        
-        if (result.Data == null) throw new Exception("Will never happen");
-        
-        var room = result.Data.Room;
-        var player = result.Data.Player;
+        var room = stateSync.Room;
+        var player = stateSync.Player;
             
         Assert.Multiple(() =>
         {
-            Assert.That(room.Code, Is.EqualTo(roomCode));
+            Assert.That(room.Code, Is.EqualTo(roomCreatedOrJoinedDto.RoomCode));;
+
+            Assert.That(player.Username, Is.EqualTo(roomCreatedOrJoinedDto.Username));
+            Assert.That(player.Score, Is.EqualTo(0));
+            Assert.That(player.IsConnected, Is.True);
+        });
+
+        return new RoomConnectedResultDto(
+            RoomCode: roomCreatedOrJoinedDto.RoomCode,
+            Token: roomCreatedOrJoinedDto.Token,
+            HubConnection: hubConnection,
+            ReceivedStateSync: stateSync
+        );
+    }
+
+    public static async Task<RoomConnectedResultDto> CreateRoomAndConnect(this BaseE2ETest test, string username)
+    {
+        var createdDto = await test.CreateRoom(username);
+        
+        var connectedResult = await test.ConnectToRoom(createdDto);
+        
+        var room = connectedResult.ReceivedStateSync.Room;
+        
+        Assert.Multiple(() =>
+        {
             Assert.That(room.Players.Count(), Is.EqualTo(1));
             Assert.That(room.Players.First().Username, Is.EqualTo(username));
             Assert.That(room.LeaderUsername, Is.EqualTo(username));
@@ -91,21 +103,12 @@ public static class RoomTestsExtensions
             Assert.That(room.Options.RoundsCount, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultRoundsCount));
             Assert.That(room.Options.MaxPlayersCount, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultMaxPlayersCount));
             Assert.That(room.Options.PossibleRoundTypes, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultPossibleRoundTypes));
-                
-            Assert.That(player.Username, Is.EqualTo(username));
-            Assert.That(player.Score, Is.EqualTo(0));
-            Assert.That(player.IsConnected, Is.True);
         });
-
-        return new RoomConnectedResultDto(
-            RoomCode: roomCode,
-            Token: token,
-            HubConnection: hubConnection,
-            ReceivedStateSync: result.Data
-        );
+        
+        return connectedResult;
     }
     
-    public static async Task<RoomConnectedResultDto> JoinRoomAndConnect(this BaseE2ETest test, string roomCode, string username)
+    public static async Task<RoomCreatedOrJoinedDto> JoinRoom(this BaseE2ETest test, string roomCode, string username)
     {
         const string captchaToken = "foo";
 
@@ -115,67 +118,34 @@ public static class RoomTestsExtensions
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
         var contentString = await response.Content.ReadAsStringAsync();
-        var responseDict = JsonSerializer.Deserialize<Dictionary<string, string>>(contentString);
+        var roomCreatedOrJoinedDto = JsonSerializer.Deserialize<RoomCreatedOrJoinedDto>(contentString, test.JsonSerializerOptions);
         
-        Assert.That(responseDict, Is.Not.Null);
-        if (responseDict == null) throw new Exception("We should not be here");
+        Assert.That(roomCreatedOrJoinedDto, Is.Not.Null);
+        if (roomCreatedOrJoinedDto == null) throw new Exception("We should not be here");
         
         Assert.Multiple(() =>
         {
-            Assert.That(responseDict?.GetValueOrDefault("token"), Is.Not.Null);
-            Assert.That(responseDict?.GetValueOrDefault("username"), Is.EqualTo(username));
-            Assert.That(responseDict?.GetValueOrDefault("roomCode"), Is.EqualTo(roomCode));
+            Assert.That(roomCreatedOrJoinedDto.Token, Is.Not.Null);
+            Assert.That(roomCreatedOrJoinedDto.Username, Is.EqualTo(username));
+            Assert.That(roomCreatedOrJoinedDto.RoomCode, Is.EqualTo(roomCode));
         });
 
-        var token = responseDict["token"];
-        var hubConnection = test.CreateHubConnection(token);
-
-        await hubConnection.StartAsync();
-        
-        var result = await hubConnection.InvokeAsync<InvocationResultDto<StateSyncDto>>("SyncAll");
-        
-        Assert.Multiple(() =>
-        {
-            Assert.That(result.Success, Is.True);
-            Assert.That(result.Data, Is.Not.Null);
-        });
-        
-        if (result.Data == null) throw new Exception("Will never happen");
-        
-        var room = result.Data.Room;
-        var player = result.Data.Player;
-            
-        Assert.Multiple(() =>
-        {
-            Assert.That(room.Code, Is.EqualTo(roomCode));
-            Assert.That(room.Players, Has.Exactly(1).Property("Username").EqualTo(username));
-            
-            Assert.That(player.Username, Is.EqualTo(username));
-            Assert.That(player.Score, Is.EqualTo(0));
-            Assert.That(player.IsConnected, Is.True);
-        });
-        
-        return new RoomConnectedResultDto(
-            RoomCode: roomCode,
-            Token: token,
-            HubConnection: hubConnection,
-            ReceivedStateSync: result.Data
-        );
+        return roomCreatedOrJoinedDto;
     }
-    
-    public static BaseExceptionDto ParseHubException(this BaseE2ETest test, HubException ex)
+
+    public static async Task<RoomConnectedResultDto> JoinRoomAndConnect(this BaseE2ETest test, string roomCode, string username)
     {
-        const string needle = "HubException:";
-        var messagePart = ex.Message[(ex.Message.IndexOf(needle, StringComparison.Ordinal) + needle.Length)..].Trim();
+        var joinedDto = await test.JoinRoom(roomCode, username);
         
-        const string prefix = "$@";
-        if (!messagePart.StartsWith(prefix)) throw new Exception("Invalid HubException message");
-        var exceptionJson = messagePart[prefix.Length..];
+        var connectedResult = await test.ConnectToRoom(joinedDto);
         
-        var baseException = JsonSerializer.Deserialize<BaseExceptionDto>(exceptionJson, test.Factory.Services.GetRequiredService<JsonSerializerOptions>());
-        if (baseException == null) throw new Exception("Invalid HubException message");
-        
-        return baseException;
+        var room = connectedResult.ReceivedStateSync.Room;
+            
+        Assert.Multiple(() =>
+        {
+            Assert.That(room.Players, Has.Exactly(1).Property("Username").EqualTo(username));
+        });
+
+        return connectedResult;
     }
-    
 }
