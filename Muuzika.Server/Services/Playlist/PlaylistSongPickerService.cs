@@ -3,27 +3,27 @@ using Muuzika.Server.Extensions;
 using Muuzika.Server.Models;
 using Muuzika.Server.Models.Interfaces;
 using Muuzika.Server.Providers.Interfaces;
-using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Playlist.Interfaces;
 
-namespace Muuzika.Server.Services;
+namespace Muuzika.Server.Services.Playlist;
 
-public class PlaylistPickerService: IPlaylistPickerService
+public class PlaylistSongPickerService: IPlaylistSongPickerService
 {
     private readonly IRandomProvider _randomProvider;
     
-    public PlaylistPickerService(IRandomProvider randomProvider)
+    public PlaylistSongPickerService(IRandomProvider randomProvider)
     {
         _randomProvider = randomProvider;
     }
 
-    public ImmutableArray<Song> PickOptions(IPlaylist playlist, int maxNumberOfOptions)
+    public ImmutableArray<Song> PickSongs(IPlaylist playlist, int maxNumberOfSongs)
     {
         if (playlist.SongsNotPlayed.Count() < 2)
         {
             throw new Exception("Not enough not-played songs");
         }
         
-        var numberOfOptions = Math.Min(maxNumberOfOptions, playlist.SongsNotPlayed.Count());
+        var numberOfOptions = Math.Min(maxNumberOfSongs, playlist.SongsNotPlayed.Count());
         var random = _randomProvider.GetRandom();
         
        return playlist.SongsNotPlayed
@@ -31,14 +31,14 @@ public class PlaylistPickerService: IPlaylistPickerService
             .ToImmutableArray();
     }
 
-    public ImmutableArray<Song> PickOptionsAvoidingRepeatedArtists(IPlaylist playlist, int maxNumberOfOptions)
+    public ImmutableArray<Song> PickSongsFromDifferentArtists(IPlaylist playlist, int maxNumberOfSongs)
     {
         if (playlist.ArtistsWithSongsNotPlayed.Count() < 2)
         {
             throw new Exception("Not enough artists with not-played songs");
         }
         
-        var numberOfOptions = Math.Min(maxNumberOfOptions, playlist.ArtistsWithSongsNotPlayed.Count());
+        var numberOfOptions = Math.Min(maxNumberOfSongs, playlist.ArtistsWithSongsNotPlayed.Count());
         var random = _randomProvider.GetRandom();
 
         return playlist.ArtistsWithSongsNotPlayed

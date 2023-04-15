@@ -1,6 +1,4 @@
-﻿using Muuzika.Server.Models;
-
-namespace Muuzika.Server.Services.Interfaces;
+﻿namespace Muuzika.Server.Services.Room.Interfaces;
 
 public interface IRoomWorkerService
 {

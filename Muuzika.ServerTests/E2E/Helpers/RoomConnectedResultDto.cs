@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Muuzika.Server.Dtos.Hub;
+using Muuzika.Server.Dtos.Hub.Responses;
 
 namespace Muuzika.ServerTests.E2E.Helpers;
 

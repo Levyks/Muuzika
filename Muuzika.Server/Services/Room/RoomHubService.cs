@@ -2,17 +2,17 @@
 using Muuzika.Server.Hubs;
 using Muuzika.Server.Hubs.Interfaces;
 using Muuzika.Server.Models;
-using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Room.Interfaces;
 
-namespace Muuzika.Server.Services;
+namespace Muuzika.Server.Services.Room;
 
 public class RoomHubService: IRoomHubService
 {
-    private readonly Room _room;
+    private readonly Models.Room _room;
     private readonly IRoomWorkerService _workerService;
     private readonly IHubContext<RoomHub, IRoomHubClient> _hubContext;
     
-    public RoomHubService(Room room, IRoomWorkerService workerService, IHubContext<RoomHub, IRoomHubClient> hubContext)
+    public RoomHubService(Models.Room room, IRoomWorkerService workerService, IHubContext<RoomHub, IRoomHubClient> hubContext)
     {
         _room = room;
         _workerService = workerService;

@@ -1,26 +1,25 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Muuzika.Server.Attributes.Auth;
-using Muuzika.Server.Dtos.Hub;
+using Muuzika.Server.Dtos.Hub.Requests;
+using Muuzika.Server.Dtos.Hub.Responses;
 using Muuzika.Server.Exceptions;
 using Muuzika.Server.Hubs.Interfaces;
 using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Models;
-using Muuzika.Server.Repositories.Interfaces;
-using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Playlist.Interfaces;
+using Muuzika.Server.Services.Room.Interfaces;
 
 namespace Muuzika.Server.Hubs;
 
 [Authorize]
 public class RoomHub: Hub<IRoomHubClient>
 {
-    public readonly IJwtService JwtService;
-    public readonly IRoomRepository RoomRepository;
-    public readonly JsonSerializerOptions JsonSerializerOptions;
-    
+    private readonly IGenericPlaylistFetcherService _genericPlaylistFetcherService;
     private readonly IRoomMapper _roomMapper;
     private readonly IExceptionMapper _exceptionMapper;
+    private readonly IServiceProvider _serviceProvider;
     
     private Player Player => Context.Items["player"] as Player ?? throw new Exception("Player not found in hub context");
     private Room Room => Player.Room;
@@ -31,13 +30,12 @@ public class RoomHub: Hub<IRoomHubClient>
     private IRoomLifeCycleService? _lifeCycleService;
     private IRoomLifeCycleService LifeCycleService => _lifeCycleService ??= Room.ServiceProvider.GetRequiredService<IRoomLifeCycleService>();
     
-    public RoomHub(IJwtService jwtService, IRoomRepository roomRepository, IRoomMapper roomMapper, IExceptionMapper exceptionMapper, JsonSerializerOptions jsonSerializerOptions)
+    public RoomHub(IGenericPlaylistFetcherService genericPlaylistFetcherService, IRoomMapper roomMapper, IExceptionMapper exceptionMapper, IServiceProvider serviceProvider)
     {
-        JwtService = jwtService;
-        RoomRepository = roomRepository;
+        _genericPlaylistFetcherService = genericPlaylistFetcherService;
         _roomMapper = roomMapper;
         _exceptionMapper = exceptionMapper;
-        JsonSerializerOptions = jsonSerializerOptions;
+        _serviceProvider = serviceProvider;
     }
     
     public StateSyncDto SyncAll() => _roomMapper.ToStateSyncDto(Room, Player);
@@ -48,10 +46,34 @@ public class RoomHub: Hub<IRoomHubClient>
         Context.Abort();
     }
     
+    private void Validate<T>(T obj, int position = 0) where T : class
+    {
+        if (obj == null) throw new InvalidArgumentsException(new ValidationException($"Argument at position {position} must not be null."));
+        
+        try
+        {
+            var validationContext = new ValidationContext(obj, _serviceProvider, null);
+            Validator.ValidateObject(obj, validationContext, true);
+        }
+        catch (ValidationException ex)
+        {
+            throw new InvalidArgumentsException(ex);
+        }
+    }
+    
     [LeaderOnly]
     public void SetOptions(RoomOptions options) 
     {
+        Validate(options);
         LifeCycleService.SetOptions(options);
+    }
+    
+    [LeaderOnly]
+    public async Task<PlaylistDto> SetPlaylist(SetPlaylistDto setPlaylistDto) 
+    {
+        Validate(setPlaylistDto);
+        var playlist = await _genericPlaylistFetcherService.FetchPlaylistAsync(setPlaylistDto.Provider, setPlaylistDto.Id);
+        return LifeCycleService.SetPlaylist(playlist, false);
     }
     
     [LeaderOnly]
@@ -87,11 +109,12 @@ public class RoomHub: Hub<IRoomHubClient>
     
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        if (Player.HubContext == null) return base.OnDisconnectedAsync(exception);
-        
-        Player.HubContext = null;
-        PlayerService.HandlePlayerDisconnection(Player);
-        
+        if (Player.HubContext != null)
+        {
+            Player.HubContext = null;
+            PlayerService.HandlePlayerDisconnection(Player);
+        }
+
         return base.OnDisconnectedAsync(exception);
     }
     #endregion

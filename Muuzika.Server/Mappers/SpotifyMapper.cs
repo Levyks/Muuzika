@@ -3,20 +3,22 @@ using Muuzika.Server.Dtos.Spotify;
 using Muuzika.Server.Enums.Misc;
 using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Models;
+using Muuzika.Server.Models.Interfaces;
 
 namespace Muuzika.Server.Mappers;
 
 public class SpotifyMapper: ISpotifyMapper
 {
-    public Playlist ToPlaylist(SpotifyPlaylistInfoDto playlistInfoDto, IEnumerable<SpotifyTrackDto> tracks)
+    public IPlaylist ToPlaylist(SpotifyPlaylistInfoDto playlistInfoDto, IEnumerable<SpotifyTrackDto> tracks)
     {
         return new Playlist(
-            SongProvider.Spotify,
-            playlistInfoDto.Id,
-            playlistInfoDto.Name,
-            playlistInfoDto.ExternalUrls.Spotify,
-            playlistInfoDto.Images.First().Url,
-            tracks.Where(t => t.PreviewUrl != null).Select(ToSong)
+            provider: SongProvider.Spotify,
+            id: playlistInfoDto.Id,
+            name: playlistInfoDto.Name,
+            createdBy: playlistInfoDto.Owner.DisplayName,
+            url: playlistInfoDto.ExternalUrls.Spotify,
+            imageUrl: playlistInfoDto.Images.First().Url,
+            songs: tracks.Where(t => t.PreviewUrl != null).Select(ToSong)
         );
     }
     
@@ -26,23 +28,23 @@ public class SpotifyMapper: ISpotifyMapper
             throw new ArgumentException("Track must have a preview url", nameof(track));
         
         return new Song(
-            SongProvider.Spotify,
-            track.Id,
-            track.Name,
-            track.ExternalUrls.Spotify,
-            track.PreviewUrl,
-            track.Album.Images.First().Url,
-            track.Artists.Select(ToArtist)
+            provider: SongProvider.Spotify,
+            id: track.Id,
+            name: track.Name,
+            url: track.ExternalUrls.Spotify,
+            previewUrl: track.PreviewUrl,
+            imageUrl: track.Album.Images.First().Url,
+            artists: track.Artists.Select(ToArtist)
         );
     }
     
     public Artist ToArtist(SpotifyArtistDto artist)
     {
         return new Artist(
-            SongProvider.Spotify,
-            artist.Id,
-            artist.Name,
-            artist.ExternalUrls.Spotify
+            provider: SongProvider.Spotify,
+            id: artist.Id,
+            name: artist.Name,
+            url: artist.ExternalUrls.Spotify
         );
     }
 }

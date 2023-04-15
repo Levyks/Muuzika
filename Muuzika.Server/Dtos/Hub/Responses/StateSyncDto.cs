@@ -1,4 +1,4 @@
-﻿namespace Muuzika.Server.Dtos.Hub;
+﻿namespace Muuzika.Server.Dtos.Hub.Responses;
 
 public record StateSyncDto(
     RoomDto Room,

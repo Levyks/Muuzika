@@ -4,10 +4,13 @@ using Muuzika.Server.Enums.Room;
 using Muuzika.Server.Extensions;
 using Muuzika.Server.Hubs;
 using Muuzika.Server.Hubs.Interfaces;
+using Muuzika.Server.Models.Interfaces;
 using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Repositories.Interfaces;
 using Muuzika.Server.Services;
 using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Room;
+using Muuzika.Server.Services.Room.Interfaces;
 using ILogger = Serilog.ILogger;
 
 namespace Muuzika.Server.Models;
@@ -18,6 +21,7 @@ public sealed class Room: IDisposable
     public Player Leader { get; set; }
     public RoomStatus Status { get; set; } = RoomStatus.InLobby;
     public RoomOptions Options { get; set; }
+    public IPlaylist? Playlist { get; set; }
     public ImmutableArray<Round>? Rounds { get; set; }
     
     internal readonly Dictionary<string, Player> PlayersDictionary = new();

@@ -1,14 +1,15 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web;
 using Muuzika.Server.Dtos.Spotify;
+using Muuzika.Server.Enums.Misc;
 using Muuzika.Server.Mappers.Interfaces;
-using Muuzika.Server.Models;
+using Muuzika.Server.Models.Interfaces;
 using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Playlist.Interfaces;
 
-namespace Muuzika.Server.Services;
+namespace Muuzika.Server.Services.Playlist;
 
 public class SpotifyPlaylistFetcherService: IPlaylistFetcherService
 {
@@ -33,6 +34,8 @@ public class SpotifyPlaylistFetcherService: IPlaylistFetcherService
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
+    
+    public SongProvider Provides => SongProvider.Spotify;
     
     public SpotifyPlaylistFetcherService(string clientId, string clientSecret, int fetchLimit, ISpotifyMapper spotifyMapper, IDateTimeProvider dateTimeProvider, IHttpService accountsApiHttpService, IHttpService webApiHttpService)
     {
@@ -127,7 +130,7 @@ public class SpotifyPlaylistFetcherService: IPlaylistFetcherService
         return pages.SelectMany(p => p.Items.Select(i => i.Track));
     }
 
-    public async Task<Playlist> FetchPlaylistAsync(string playlistId)
+    public async Task<IPlaylist> FetchPlaylistAsync(string playlistId)
     {
         var info = await FetchPlaylistInfoWithTracksFirstPage(playlistId);
         

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Muuzika.Server.Dtos.Gateway;
 using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Playlist.Interfaces;
+using Muuzika.Server.Services.Room.Interfaces;
 
 namespace Muuzika.Server.Controllers;
 
@@ -8,26 +10,26 @@ namespace Muuzika.Server.Controllers;
 [Route("[controller]")]
 public class RoomController : ControllerBase
 {
-    private readonly IRoomService _roomService;
+    private readonly IRoomJoinerService _roomJoinerService;
     private readonly IPlaylistFetcherService _playlistFetcherService;
     
-    public RoomController(IRoomService roomService, IPlaylistFetcherService playlistFetcherService)
+    public RoomController(IRoomJoinerService roomJoinerService, IPlaylistFetcherService playlistFetcherService)
     {
-        _roomService = roomService;
+        _roomJoinerService = roomJoinerService;
         _playlistFetcherService = playlistFetcherService;
     }
 
     [HttpPost]
     public Task<RoomCreatedOrJoinedDto> CreateRoom([FromBody] CreateOrJoinRoomDto createRoomDto)
     {
-        return _roomService.CreateRoom(createRoomDto);
+        return _roomJoinerService.CreateRoom(createRoomDto);
     }
     
     [HttpPost("{roomCode}")]
     public Task<RoomCreatedOrJoinedDto> JoinRoom([FromRoute] string roomCode, [FromBody] CreateOrJoinRoomDto joinRoomDto)
     {
         Console.WriteLine($"Joining room {roomCode}");
-        return _roomService.JoinRoom(roomCode, joinRoomDto);
+        return _roomJoinerService.JoinRoom(roomCode, joinRoomDto);
     }
     
     [HttpGet("playlist/{playlistId}")]

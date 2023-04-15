@@ -3,7 +3,7 @@ using Moq;
 using Muuzika.Server.Enums.Room;
 using Muuzika.Server.Providers;
 
-namespace Muuzika.ServerTests.Unit;
+namespace Muuzika.ServerTests.Unit.Providers;
 
 public class ConfigProviderTests
 {
@@ -17,7 +17,7 @@ public class ConfigProviderTests
     private const string DelayDisconnectedPlayerRemoval = "00:00:10";
     
     private const string RoomDefaultPossibleRoundTypes = "Both";
-    private const string RoomDefaultRoundsCount = "10";
+    private const string RoomDefaultRoundCount = "10";
     private const string RoomDefaultRoundDuration = "00:00:10";
     private const string RoomDefaultMaxPlayersCount = "10";
     
@@ -46,7 +46,7 @@ public class ConfigProviderTests
         _configurationMock.Setup(x => x["Room:DelayDisconnectedPlayerRemoval"]).Returns(DelayDisconnectedPlayerRemoval);
         
         _configurationMock.Setup(x => x["Room:DefaultPossibleRoundTypes"]).Returns(RoomDefaultPossibleRoundTypes);
-        _configurationMock.Setup(x => x["Room:DefaultRoundsCount"]).Returns(RoomDefaultRoundsCount);
+        _configurationMock.Setup(x => x["Room:DefaultRoundCount"]).Returns(RoomDefaultRoundCount);
         _configurationMock.Setup(x => x["Room:DefaultRoundDuration"]).Returns(RoomDefaultRoundDuration);
         _configurationMock.Setup(x => x["Room:DefaultMaxPlayersCount"]).Returns(RoomDefaultMaxPlayersCount);
         
@@ -78,15 +78,15 @@ public class ConfigProviderTests
             Assert.That(configProvider.DelayDisconnectedPlayerRemoval, Is.EqualTo(TimeSpan.Parse(DelayDisconnectedPlayerRemoval)));
             
             Assert.That(configProvider.RoomDefaultPossibleRoundTypes, Is.EqualTo(Enum.Parse<RoomPossibleRoundTypes>(RoomDefaultPossibleRoundTypes)));
-            Assert.That(configProvider.RoomDefaultRoundsCount, Is.EqualTo(ushort.Parse(RoomDefaultRoundsCount)));
+            Assert.That(configProvider.RoomDefaultRoundCount, Is.EqualTo(int.Parse(RoomDefaultRoundCount)));
             Assert.That(configProvider.RoomDefaultRoundDuration, Is.EqualTo(TimeSpan.Parse(RoomDefaultRoundDuration)));
-            Assert.That(configProvider.RoomDefaultMaxPlayersCount, Is.EqualTo(ushort.Parse(RoomDefaultMaxPlayersCount)));
+            Assert.That(configProvider.RoomDefaultMaxPlayersCount, Is.EqualTo(int.Parse(RoomDefaultMaxPlayersCount)));
             
-            Assert.That(configProvider.RoomMinRoundsCount, Is.EqualTo(ushort.Parse(RoomMinRoundsCount)));
-            Assert.That(configProvider.RoomMaxRoundsCount, Is.EqualTo(ushort.Parse(RoomMaxRoundsCount)));
+            Assert.That(configProvider.RoomMinRoundsCount, Is.EqualTo(int.Parse(RoomMinRoundsCount)));
+            Assert.That(configProvider.RoomMaxRoundsCount, Is.EqualTo(int.Parse(RoomMaxRoundsCount)));
             
-            Assert.That(configProvider.RoomMinMaxPlayersCount, Is.EqualTo(ushort.Parse(RoomMinMaxPlayersCount)));
-            Assert.That(configProvider.RoomMaxMaxPlayersCount, Is.EqualTo(ushort.Parse(RoomMaxMaxPlayersCount)));
+            Assert.That(configProvider.RoomMinMaxPlayersCount, Is.EqualTo(int.Parse(RoomMinMaxPlayersCount)));
+            Assert.That(configProvider.RoomMaxMaxPlayersCount, Is.EqualTo(int.Parse(RoomMaxMaxPlayersCount)));
             
             Assert.That(configProvider.RoomMinRoundDuration, Is.EqualTo(TimeSpan.Parse(RoomMinRoundDuration)));
             Assert.That(configProvider.RoomMaxRoundDuration, Is.EqualTo(TimeSpan.Parse(RoomMaxRoundDuration)));
@@ -103,7 +103,7 @@ public class ConfigProviderTests
     [TestCase("Room:DelayCloseRoomAfterLastPlayerLeft")]
     [TestCase("Room:DelayDisconnectedPlayerRemoval")]
     [TestCase("Room:DefaultPossibleRoundTypes")]
-    [TestCase("Room:DefaultRoundsCount")]
+    [TestCase("Room:DefaultRoundCount")]
     [TestCase("Room:DefaultRoundDuration")]
     [TestCase("Room:DefaultMaxPlayersCount")]
     [TestCase("Room:MinRoundsCount")]
@@ -151,8 +151,8 @@ public class ConfigProviderTests
     }
     
     [Test]
-    [TestCase("Room:DefaultRoundsCount")]
-    public void ShouldThrowIfUshortValueIsInvalid(string key)
+    [TestCase("Room:DefaultRoundCount")]
+    public void ShouldThrowIfIntValueIsInvalid(string key)
     {
         const string value = "invalid";
         _configurationMock.Setup(x => x[key]).Returns(value);
@@ -163,7 +163,7 @@ public class ConfigProviderTests
         });
         
         Assert.That(exception, Is.Not.Null);
-        Assert.That(exception?.Message, Is.EqualTo($"{key} is not a valid ushort (value: \"{value}\")"));
+        Assert.That(exception?.Message, Is.EqualTo($"{key} is not a valid int (value: \"{value}\")"));
     }
     
     [Test]

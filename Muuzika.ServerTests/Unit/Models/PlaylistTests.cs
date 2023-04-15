@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using Moq;
 using Muuzika.Server.Enums.Misc;
 using Muuzika.Server.Models;
 using Muuzika.ServerTests.Helpers.Fakers;
@@ -13,15 +12,17 @@ public class PlaylistTests
     {
         const string id = "id";
         const string name = "name";
+        const string createdBy = "createdBy";
         const string url = "url";
         const string imageUrl = "imageUrl";
         
-        var playlist = new Playlist(SongProvider.Spotify, id, name, url, imageUrl, ImmutableArray<Song>.Empty);
+        var playlist = new Playlist(SongProvider.Spotify, id, name, createdBy, url, imageUrl, ImmutableArray<Song>.Empty);
         
         Assert.Multiple(() =>
         {
             Assert.That(playlist.Id, Is.EqualTo(id));
             Assert.That(playlist.Name, Is.EqualTo(name));
+            Assert.That(playlist.CreatedBy, Is.EqualTo(createdBy));
             Assert.That(playlist.Url, Is.EqualTo(url));
             Assert.That(playlist.ImageUrl, Is.EqualTo(imageUrl));
         });
@@ -35,7 +36,7 @@ public class PlaylistTests
         
         var songs = SongFaker.GetSongs(numberOfDifferentArtists, numberOfSongsPerArtist);
         
-        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "url", "imageUrl", songs);
+        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "createdBy", "url", "imageUrl", songs);
         
         Assert.Multiple(() =>
         {
@@ -59,7 +60,7 @@ public class PlaylistTests
     {
         var songs = SongFaker.GetSongs(10, new []{ 1, 5, 1, 3, 1, 3, 4, 5, 6, 1 });
         
-        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "url", "imageUrl", songs);
+        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "createdBy", "url", "imageUrl", songs);
         
         Assert.That(playlist.NumberOfPlayableSongRounds, Is.EqualTo(29));
     }
@@ -69,7 +70,7 @@ public class PlaylistTests
     {
         var songs = SongFaker.GetSongs(5, new []{ 1, 5, 1, 3, 1 });
         
-        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "url", "imageUrl", songs);
+        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "createdBy", "url", "imageUrl", songs);
         
         Assert.That(playlist.NumberOfPlayableArtistRounds, Is.EqualTo(6));
     }
@@ -79,7 +80,7 @@ public class PlaylistTests
     {
         var songs = SongFaker.GetSongs();
         
-        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "url", "imageUrl", songs);
+        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "createdBy", "url", "imageUrl", songs);
         
         var song = playlist.SongsNotPlayed.Last();
         
@@ -99,7 +100,7 @@ public class PlaylistTests
     {
         var songs = SongFaker.GetSongs();
         
-        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "url", "imageUrl", songs);
+        var playlist = new Playlist(SongProvider.Spotify, "id", "name", "createdBy", "url", "imageUrl", songs);
         
         var song = playlist.SongsNotPlayed.First();
         

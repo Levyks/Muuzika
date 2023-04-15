@@ -20,7 +20,7 @@ public class HubAuthE2ETests: BaseE2ETest
         try
         {
             await hubConnection.StartAsync();
-            Assert.Fail("Connection should not be established");
+            Assert.Fail("Connection should have failed");
         }
         catch (HttpRequestException ex)
         {

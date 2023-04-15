@@ -1,5 +1,6 @@
 ﻿using Muuzika.Server.Dtos.Gateway;
 using Muuzika.Server.Dtos.Hub;
+using Muuzika.Server.Dtos.Hub.Responses;
 using Muuzika.Server.Models;
 
 namespace Muuzika.Server.Mappers.Interfaces;

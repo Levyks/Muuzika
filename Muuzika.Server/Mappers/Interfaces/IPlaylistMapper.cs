@@ -1,10 +1,10 @@
 ﻿using Muuzika.Server.Dtos.Hub;
 using Muuzika.Server.Dtos.Hub.Responses;
-using Muuzika.Server.Models;
+using Muuzika.Server.Models.Interfaces;
 
 namespace Muuzika.Server.Mappers.Interfaces;
 
-public interface IPlayerMapper
+public interface IPlaylistMapper
 {
-    PlayerDto ToDto(Player player);
+    PlaylistDto ToDto(IPlaylist playlist);
 }

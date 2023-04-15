@@ -8,9 +8,9 @@ public interface IPlaylist
     SongProvider Provider { get; }
     string Id { get; }
     string Name { get; }
+    string CreatedBy { get; }
     string Url { get; }
     string ImageUrl { get; }
-    int TotalSongsCount { get; }
     
     int NumberOfPlayableSongRounds { get; }
     int NumberOfPlayableArtistRounds { get; }

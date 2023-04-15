@@ -3,13 +3,14 @@ using Muuzika.Server.Models;
 using Muuzika.Server.Models.Interfaces;
 using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Services;
+using Muuzika.Server.Services.Playlist;
 using Muuzika.ServerTests.Helpers.Fakers;
 
 namespace Muuzika.ServerTests.Unit.Services;
 
 public class PlaylistPickerServiceTests
 {
-    private PlaylistPickerService _playlistPickerService = null!;
+    private PlaylistSongPickerService _playlistSongPickerService = null!;
     
     private Mock<IPlaylist> _playlistMock = null!;
 
@@ -19,7 +20,7 @@ public class PlaylistPickerServiceTests
         var randomProviderMock = new Mock<IRandomProvider>();
         randomProviderMock.Setup(x => x.GetRandom()).Returns(new Random(42));
         
-        _playlistPickerService = new PlaylistPickerService(randomProviderMock.Object);
+        _playlistSongPickerService = new PlaylistSongPickerService(randomProviderMock.Object);
         
         _playlistMock = new Mock<IPlaylist>();
     }
@@ -31,7 +32,7 @@ public class PlaylistPickerServiceTests
         
         _playlistMock.Setup(x => x.SongsNotPlayed).Returns(songsNotPlayed);
         
-        var exception = Assert.Throws<Exception>(() => _playlistPickerService.PickOptions(_playlistMock.Object, 4));
+        var exception = Assert.Throws<Exception>(() => _playlistSongPickerService.PickSongs(_playlistMock.Object, 4));
         
         Assert.That(exception?.Message, Is.EqualTo("Not enough not-played songs"));
     }
@@ -45,7 +46,7 @@ public class PlaylistPickerServiceTests
 
         _playlistMock.Setup(x => x.SongsNotPlayed).Returns(songsNotPlayed);
 
-        var options = _playlistPickerService.PickOptions(_playlistMock.Object, maxNumberOfOptions);
+        var options = _playlistSongPickerService.PickSongs(_playlistMock.Object, maxNumberOfOptions);
         
         /*
          * I'm having trouble asserting exact ids here, even when using a seed or mocking Random.Next()
@@ -65,7 +66,7 @@ public class PlaylistPickerServiceTests
         
         _playlistMock.Setup(x => x.ArtistsWithSongsNotPlayed).Returns(artistsWithSongsNotPlayed);
         
-        var exception = Assert.Throws<Exception>(() => _playlistPickerService.PickOptionsAvoidingRepeatedArtists(_playlistMock.Object, 4));
+        var exception = Assert.Throws<Exception>(() => _playlistSongPickerService.PickSongsFromDifferentArtists(_playlistMock.Object, 4));
         
         Assert.That(exception?.Message, Is.EqualTo("Not enough artists with not-played songs"));
     }
@@ -81,7 +82,7 @@ public class PlaylistPickerServiceTests
             .Setup(x => x.GetSongsNotPlayedFromArtist(It.IsAny<Artist>()))
             .Returns((Artist artist) => SongFaker.GetSongs(artist));
         
-        var options = _playlistPickerService.PickOptionsAvoidingRepeatedArtists(_playlistMock.Object, maxNumberOfOptions);
+        var options = _playlistSongPickerService.PickSongsFromDifferentArtists(_playlistMock.Object, maxNumberOfOptions);
 
         var artists = options.Select(x => x.Artists.First());
         

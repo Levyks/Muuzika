@@ -2,21 +2,21 @@
 using Muuzika.Server.Enums.Misc;
 using Muuzika.Server.Exceptions;
 using Muuzika.Server.Mappers.Interfaces;
-using Muuzika.Server.Models;
 using Muuzika.Server.Repositories.Interfaces;
 using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Room.Interfaces;
 
-namespace Muuzika.Server.Services;
+namespace Muuzika.Server.Services.Room;
 
-public class RoomService: IRoomService
+public class RoomJoinerService: IRoomJoinerService
 {
     private readonly IRoomRepository _roomRepository;
-    private readonly ILogger<RoomService> _logger;
+    private readonly ILogger<RoomJoinerService> _logger;
     private readonly IRoomMapper _roomMapper;
     private readonly ICaptchaService _captchaService;
     private readonly IServiceProvider _serviceProvider;
     
-    public RoomService(IServiceProvider serviceProvider, ILogger<RoomService> logger, IRoomRepository roomRepository, IRoomMapper roomMapper, ICaptchaService captchaService)
+    public RoomJoinerService(IServiceProvider serviceProvider, ILogger<RoomJoinerService> logger, IRoomRepository roomRepository, IRoomMapper roomMapper, ICaptchaService captchaService)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -48,7 +48,7 @@ public class RoomService: IRoomService
         
         try
         {
-            var room = new Room(code, createRoomDto.Username, _roomRepository, _serviceProvider);
+            var room = new Models.Room(code, createRoomDto.Username, _roomRepository, _serviceProvider);
             
             _roomRepository.StoreRoom(room);
 

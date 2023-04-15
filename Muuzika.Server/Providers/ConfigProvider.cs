@@ -15,15 +15,15 @@ public class ConfigProvider: IConfigProvider
     public TimeSpan DelayDisconnectedPlayerRemoval { get; }
     
     public RoomPossibleRoundTypes RoomDefaultPossibleRoundTypes { get; }
-    public ushort RoomDefaultRoundsCount { get; }
+    public int RoomDefaultRoundCount { get; }
     public TimeSpan RoomDefaultRoundDuration { get; }
-    public ushort RoomDefaultMaxPlayersCount { get; }
+    public int RoomDefaultMaxPlayersCount { get; }
     
-    public ushort RoomMinRoundsCount { get; }
-    public ushort RoomMaxRoundsCount { get; }
+    public int RoomMinRoundsCount { get; }
+    public int RoomMaxRoundsCount { get; }
     
-    public ushort RoomMinMaxPlayersCount { get; }
-    public ushort RoomMaxMaxPlayersCount { get; }
+    public int RoomMinMaxPlayersCount { get; }
+    public int RoomMaxMaxPlayersCount { get; }
     
     public TimeSpan RoomMinRoundDuration { get; }
     public TimeSpan RoomMaxRoundDuration { get; }
@@ -43,15 +43,15 @@ public class ConfigProvider: IConfigProvider
         DelayDisconnectedPlayerRemoval = GetTimeSpan("Room:DelayDisconnectedPlayerRemoval");
         
         RoomDefaultPossibleRoundTypes = GetEnum<RoomPossibleRoundTypes>("Room:DefaultPossibleRoundTypes");
-        RoomDefaultRoundsCount = GetUshort("Room:DefaultRoundsCount");
+        RoomDefaultRoundCount = GetInt("Room:DefaultRoundCount");
         RoomDefaultRoundDuration = GetTimeSpan("Room:DefaultRoundDuration");
-        RoomDefaultMaxPlayersCount = GetUshort("Room:DefaultMaxPlayersCount");
+        RoomDefaultMaxPlayersCount = GetInt("Room:DefaultMaxPlayersCount");
         
-        RoomMinRoundsCount = GetUshort("Room:MinRoundsCount");
-        RoomMaxRoundsCount = GetUshort("Room:MaxRoundsCount");
+        RoomMinRoundsCount = GetInt("Room:MinRoundsCount");
+        RoomMaxRoundsCount = GetInt("Room:MaxRoundsCount");
         
-        RoomMinMaxPlayersCount = GetUshort("Room:MinMaxPlayersCount");
-        RoomMaxMaxPlayersCount = GetUshort("Room:MaxMaxPlayersCount");
+        RoomMinMaxPlayersCount = GetInt("Room:MinMaxPlayersCount");
+        RoomMaxMaxPlayersCount = GetInt("Room:MaxMaxPlayersCount");
         
         RoomMinRoundDuration = GetTimeSpan("Room:MinRoundDuration");
         RoomMaxRoundDuration = GetTimeSpan("Room:MaxRoundDuration");
@@ -73,16 +73,16 @@ public class ConfigProvider: IConfigProvider
         }
     }
 
-    private ushort GetUshort(string key)
+    private int GetInt(string key)
     {
         var value = Get(key);
         try
         {
-            return ushort.Parse(value);
+            return int.Parse(value);
         }
         catch (FormatException ex)
         {
-            throw new ArgumentException($"{key} is not a valid ushort (value: \"{value}\")", ex);
+            throw new ArgumentException($"{key} is not a valid int (value: \"{value}\")", ex);
         }
     }
 

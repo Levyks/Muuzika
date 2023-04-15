@@ -8,6 +8,7 @@ using Muuzika.Server.Models;
 using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Services;
 using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Playlist;
 
 namespace Muuzika.ServerTests.Unit.Services;
 
@@ -159,6 +160,7 @@ public class SpotifyPlaylistFetcherServiceTests
             provider: SongProvider.Spotify,
             id: playlistId,
             name: "name",
+            createdBy: "ownerDisplayName",
             url: "spotifyUrl",
             imageUrl: "imageUrl",
             songs: Enumerable.Empty<Song>()

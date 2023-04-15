@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Muuzika.Server.Dtos.Gateway;
 using Muuzika.Server.Dtos.Hub;
+using Muuzika.Server.Dtos.Hub.Responses;
 using Muuzika.Server.Enums.Room;
+using Muuzika.Server.Models;
 
 namespace Muuzika.ServerTests.E2E.Helpers.Extensions;
 
@@ -99,10 +101,10 @@ public static class RoomTestsExtensions
             Assert.That(room.LeaderUsername, Is.EqualTo(username));
             Assert.That(room.Status, Is.EqualTo(RoomStatus.InLobby));
             
-            Assert.That(room.Options.RoundDuration, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultRoundDuration));
-            Assert.That(room.Options.RoundsCount, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultRoundsCount));
-            Assert.That(room.Options.MaxPlayersCount, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultMaxPlayersCount));
-            Assert.That(room.Options.PossibleRoundTypes, Is.EqualTo(test.ConfigProviderMock.Object.RoomDefaultPossibleRoundTypes));
+            Assert.That(room.Options.RoundDuration.ToString(), Is.EqualTo(test.Configuration["Room:DefaultRoundDuration"]));
+            Assert.That(room.Options.RoundCount.ToString(), Is.EqualTo(test.Configuration["Room:DefaultRoundCount"]));
+            Assert.That(room.Options.MaxPlayersCount.ToString(), Is.EqualTo(test.Configuration["Room:DefaultMaxPlayersCount"]));
+            Assert.That(room.Options.PossibleRoundTypes.ToString(), Is.EqualTo(test.Configuration["Room:DefaultPossibleRoundTypes"]));
         });
         
         return connectedResult;
@@ -143,7 +145,7 @@ public static class RoomTestsExtensions
             
         Assert.Multiple(() =>
         {
-            Assert.That(room.Players, Has.Exactly(1).Property("Username").EqualTo(username));
+            Assert.That(room.Players, Has.Exactly(1).Property(nameof(Player.Username)).EqualTo(username));
         });
 
         return connectedResult;

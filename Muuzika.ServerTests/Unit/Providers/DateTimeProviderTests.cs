@@ -1,6 +1,6 @@
 ﻿using Muuzika.Server.Providers;
 
-namespace Muuzika.ServerTests.Unit;
+namespace Muuzika.ServerTests.Unit.Providers;
 
 public class DateTimeProviderTests
 {

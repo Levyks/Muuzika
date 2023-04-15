@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Muuzika.Server.Exceptions;
 using Muuzika.Server.Repositories.Interfaces;
 using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Room.Interfaces;
 
 namespace Muuzika.Server.Auth;
 

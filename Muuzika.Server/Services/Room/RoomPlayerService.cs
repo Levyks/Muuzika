@@ -4,13 +4,14 @@ using Muuzika.Server.Extensions;
 using Muuzika.Server.Models;
 using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Room.Interfaces;
 using ILogger = Serilog.ILogger;
 
-namespace Muuzika.Server.Services;
+namespace Muuzika.Server.Services.Room;
 
 public class RoomPlayerService: IRoomPlayerService
 {
-    private readonly Room _room;
+    private readonly Models.Room _room;
     private readonly IRoomHubService _hubService;
     private readonly IRoomWorkerService _workerService;
     private readonly IRoomLifeCycleService _lifeCycleService;
@@ -20,7 +21,7 @@ public class RoomPlayerService: IRoomPlayerService
     private readonly ILogger _logger;
     
     
-    public RoomPlayerService(Room room, IRoomHubService hubService, IRoomWorkerService workerService, IRoomLifeCycleService lifeCycleService, IJwtService jwtService, IRandomProvider randomProvider, IConfigProvider configProvider, ILogger logger)
+    public RoomPlayerService(Models.Room room, IRoomHubService hubService, IRoomWorkerService workerService, IRoomLifeCycleService lifeCycleService, IJwtService jwtService, IRandomProvider randomProvider, IConfigProvider configProvider, ILogger logger)
     {
         _room = room;
         _hubService = hubService;
@@ -123,7 +124,7 @@ public class RoomPlayerService: IRoomPlayerService
     public void SetLeader(Player player)
     {
         _room.Leader = player;
-        _hubService.SendToAll(client => client.RoomLeaderChanged(player.Username));
+        _hubService.SendToAll(client => client.LeaderChanged(player.Username));
     }
 
     public string GetTokenForPlayer(Player player)

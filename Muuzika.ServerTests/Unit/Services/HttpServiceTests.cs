@@ -101,7 +101,7 @@ public class HttpServiceTests
         try
         {
             await MockAndDoRequest(expectedResponseMessage, httpService => httpService.GetAsync<TestDto>(url));
-            Assert.Fail("Expected exception was not thrown.");
+            Assert.Fail("Request should have thrown an exception");
         }
         catch (HttpRequestException exception)
         {

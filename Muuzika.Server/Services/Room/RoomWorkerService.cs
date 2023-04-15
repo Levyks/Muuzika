@@ -1,15 +1,14 @@
-﻿using Muuzika.Server.Models;
-using Muuzika.Server.Services.Interfaces;
+﻿using Muuzika.Server.Services.Room.Interfaces;
 
-namespace Muuzika.Server.Services;
+namespace Muuzika.Server.Services.Room;
 
 public class RoomWorkerService: IRoomWorkerService
 {
 
-    private readonly Room _room;
+    private readonly Models.Room _room;
     private readonly Serilog.ILogger _logger;
     
-    public RoomWorkerService(Room room, Serilog.ILogger logger)
+    public RoomWorkerService(Models.Room room, Serilog.ILogger logger)
     {
         _room = room;
         _logger = logger;

@@ -14,6 +14,10 @@ using Muuzika.Server.Repositories;
 using Muuzika.Server.Repositories.Interfaces;
 using Muuzika.Server.Services;
 using Muuzika.Server.Services.Interfaces;
+using Muuzika.Server.Services.Playlist;
+using Muuzika.Server.Services.Playlist.Interfaces;
+using Muuzika.Server.Services.Room;
+using Muuzika.Server.Services.Room.Interfaces;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -103,10 +107,11 @@ internal class Program
         services.AddSingleton<IRoomMapper, RoomMapper>();
         services.AddSingleton<IExceptionMapper, ExceptionMapper>();
         services.AddSingleton<ISpotifyMapper, SpotifyMapper>();
+        services.AddSingleton<IPlaylistMapper, PlaylistMapper>();
 
         services.AddSingleton<IRoomRepository, RoomRepository>();
     
-        services.AddSingleton<IRoomService, RoomService>();
+        services.AddSingleton<IRoomJoinerService, RoomJoinerService>();
         services.AddSingleton<IJwtService, JwtService>();
         services.AddSingleton<IPlaylistFetcherService, SpotifyPlaylistFetcherService>();
         // TODO: Replace with real captcha service

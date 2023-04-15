@@ -15,6 +15,7 @@ public enum ExceptionType
     PlayerNotFound,
     LeaderOnlyAction,
     CannotKickLeader,
+    InvalidArguments,
     #endregion
 
     #region Both

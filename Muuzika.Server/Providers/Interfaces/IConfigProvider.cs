@@ -12,15 +12,15 @@ public interface IConfigProvider
     TimeSpan DelayDisconnectedPlayerRemoval { get; }
     
     RoomPossibleRoundTypes RoomDefaultPossibleRoundTypes { get; }
-    ushort RoomDefaultRoundsCount { get; }
+    int RoomDefaultRoundCount { get; }
     TimeSpan RoomDefaultRoundDuration { get; }
-    ushort RoomDefaultMaxPlayersCount { get; }
+    int RoomDefaultMaxPlayersCount { get; }
     
-    ushort RoomMinRoundsCount { get; }
-    ushort RoomMaxRoundsCount { get; }
+    int RoomMinRoundsCount { get; }
+    int RoomMaxRoundsCount { get; }
     
-    ushort RoomMinMaxPlayersCount { get; }
-    ushort RoomMaxMaxPlayersCount { get; }
+    int RoomMinMaxPlayersCount { get; }
+    int RoomMaxMaxPlayersCount { get; }
     
     TimeSpan RoomMinRoundDuration { get; }
     TimeSpan RoomMaxRoundDuration { get; }

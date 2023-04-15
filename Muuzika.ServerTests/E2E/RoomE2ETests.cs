@@ -115,7 +115,7 @@ public class RoomE2ETests: BaseE2ETest
         var playerConnectedResult = await this.JoinRoomAndConnect(leaderConnectedResult.RoomCode, playerUsername);
         
         var leaderChangedTcs = new TaskCompletionSource<DateTime>();
-        playerConnectedResult.HubConnection.On<string>("RoomLeaderChanged", username => {
+        playerConnectedResult.HubConnection.On<string>("LeaderChanged", username => {
             Assert.That(username, Is.EqualTo(playerUsername));
             leaderChangedTcs.SetResult(DateTime.UtcNow);
         });
@@ -162,8 +162,8 @@ public class RoomE2ETests: BaseE2ETest
 
         try
         {
-            await connectedResult.HubConnection.InvokeAsync<InvocationResultDto<object?>>("KickPlayer", "leader");
-            Assert.Fail("Should not succeed");
+            await connectedResult.HubConnection.InvokeAsync("KickPlayer", "leader");
+            Assert.Fail("Invocation should have failed");
         }
         catch (HubException ex)
         {

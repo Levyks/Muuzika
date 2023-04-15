@@ -1,22 +1,21 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Muuzika.Server.Enums.Room;
 using Muuzika.Server.Mappers.Interfaces;
-using Muuzika.Server.Providers;
 using Muuzika.Server.Providers.Interfaces;
 
 namespace Muuzika.ServerTests.E2E.Helpers;
 
 public abstract class BaseE2ETest
 {
-    internal DateTime Now;
-    internal Mock<IRandomProvider> RandomProviderMock = null!;
-    internal Mock<IConfigProvider> ConfigProviderMock = null!;
-    internal Mock<IDateTimeProvider> DateTimeProviderMock = null!;
+    protected internal DateTime Now;
+    protected internal Mock<IRandomProvider> RandomProviderMock = null!;
+    protected internal Mock<IDateTimeProvider> DateTimeProviderMock = null!;
+    protected internal IConfiguration Configuration = null!;
 
-    internal JsonSerializerOptions JsonSerializerOptions = null!;
-    internal IExceptionMapper ExceptionMapper = null!;
+    protected internal JsonSerializerOptions JsonSerializerOptions = null!;
+    protected internal IExceptionMapper ExceptionMapper = null!;
     
     internal MockableMuuzikaWebApplicationFactory Factory = null!;
     private HttpClient? _client;
@@ -33,21 +32,13 @@ public abstract class BaseE2ETest
         DateTimeProviderMock = new Mock<IDateTimeProvider>();
         DateTimeProviderMock.Setup(x => x.GetNow()).Returns(Now);
         
-        ConfigProviderMock = new Mock<IConfigProvider>();
-        ConfigProviderMock.Setup(x => x.JwtKey).Returns("f4r0u71n7h3unch4r73db4ckw473r5");
-        ConfigProviderMock.Setup(x => x.JwtIssuer).Returns("https://muuzika.com");
-        ConfigProviderMock.Setup(x => x.JwtAudience).Returns("https://muuzika.com");
-        
-        ConfigProviderMock.Setup(x => x.DelayCloseRoomAfterLastPlayerLeft).Returns(TimeSpan.FromMinutes(5));
-        ConfigProviderMock.Setup(x => x.DelayDisconnectedPlayerRemoval).Returns(TimeSpan.FromMinutes(2));
-        
-        ConfigProviderMock.Setup(x => x.RoomDefaultPossibleRoundTypes).Returns(RoomPossibleRoundTypes.Both);
-        ConfigProviderMock.Setup(x => x.RoomDefaultRoundsCount).Returns(5);
-        ConfigProviderMock.Setup(x => x.RoomDefaultRoundDuration).Returns(TimeSpan.FromSeconds(15));
+        Configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.e2e.json")
+            .Build();
         
         Factory = new MockableMuuzikaWebApplicationFactory()
             .Mock(RandomProviderMock)
-            .Mock(ConfigProviderMock)
+            .Mock(Configuration)
             .Mock(DateTimeProviderMock);
         
         JsonSerializerOptions = Factory.Services.GetRequiredService<JsonSerializerOptions>();
