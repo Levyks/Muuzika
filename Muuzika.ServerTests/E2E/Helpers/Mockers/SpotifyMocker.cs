@@ -1,8 +1,12 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Moq.Protected;
+using Muuzika.Server.Dtos.Spotify;
+using Muuzika.Server.Enums.Spotify;
 using Muuzika.Server.Services;
 using Muuzika.Server.Services.Interfaces;
 
@@ -12,32 +16,58 @@ public class SpotifyMocker
 {
     
     private readonly IConfiguration _configuration;
-    
+    private IHttpService? HttpService { get; set; }
+
     private SpotifyMocker(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    private HttpResponseMessage HandleTokenRequest(HttpRequestMessage request)
+    private async Task<HttpResponseMessage> HandleTokenRequest(HttpRequestMessage request)
     {
-        var body = request.Content?.ReadAsStringAsync().Result;
+        var bodyString = await request.Content?.ReadAsStringAsync()!;
         
-        
-        throw new NotImplementedException();
-        
-        
+        var body  = bodyString
+            .Split('&')
+            .Select(x => x.Split('='))
+            .ToDictionary(x => x[0], x => x[1]);
+
+
+        if (body["grant_type"] != "client_credentials" ||
+            body["client_id"] != _configuration["Spotify:ClientId"] ||
+            body["client_secret"] != _configuration["Spotify:ClientSecret"])
+        {
+            throw new Exception($"Unexpected request: {request}");
+        }
+
+        var responseContent = new SpotifyAccessTokenDto("foo", SpotifyTokenType.Bearer, 3600);
+
+        return new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(responseContent,  options: HttpService?.JsonSerializerOptions)
+        };
     }
     
-    private HttpResponseMessage HandleRequest(HttpRequestMessage request) => request.RequestUri?.ToString() switch
+    private async Task<HttpResponseMessage> HandlePlaylistRequest(HttpRequestMessage request)
+    {
+        if (request.RequestUri?.Query != SpotifyPlaylistInfoWithTracksFirstPageDto.Fields)
+        {
+            throw new Exception($"Unexpected request: {request}");
+        }
+        
+        var playlistId = request.RequestUri.Segments[^1];
+
+        throw new NotImplementedException();
+    }
+    
+
+    private Task<HttpResponseMessage> HandleSendAsync(HttpRequestMessage request, CancellationToken _) => request.RequestUri?.ToString() switch
     {
         "https://accounts.spotify.com/api/token" => HandleTokenRequest(request),
-        _ => throw new Exception($"Unexpected request: {request}")
+        { } url when url.StartsWith("https://api.spotify.com/v1/playlists") => HandlePlaylistRequest(request),
+        _ => throw new NotImplementedException()
     };
-
-    private Task<HttpResponseMessage> HandleSendAsync(HttpRequestMessage request, CancellationToken _)
-    {
-        return Task.FromResult(HandleRequest(request));
-    }
     
     private HttpClient GetMockedHttpClient()
     {
@@ -54,11 +84,13 @@ public class SpotifyMocker
     
     internal static void Setup(MockableMuuzikaWebApplicationFactory factory, IConfiguration configuration)
     {
-        var mocker = new SpotifyMocker(configuration);
-        factory.MockTransient<IHttpService>(
-            serviceProvider => new HttpService(mocker.GetMockedHttpClient(),
-                serviceProvider.GetRequiredService<JsonSerializerOptions>())
-        );
+        factory.MockTransient<IHttpService>(serviceProvider =>
+        {
+            var mocker = new SpotifyMocker(configuration);
+            var httpService = new HttpService(mocker.GetMockedHttpClient(), serviceProvider.GetRequiredService<JsonSerializerOptions>());
+            mocker.HttpService = httpService;
+            return httpService;
+        });
     }
     
 }

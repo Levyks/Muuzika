@@ -42,7 +42,7 @@ public abstract class BaseE2ETest
             .Mock(Configuration)
             .Mock(DateTimeProviderMock);
         
-        // SpotifyMocker.Setup(Factory, Configuration);
+        SpotifyMocker.Setup(Factory, Configuration);
         
         JsonSerializerOptions = Factory.Services.GetRequiredService<JsonSerializerOptions>();
         ExceptionMapper = Factory.Services.GetRequiredService<IExceptionMapper>();

@@ -76,7 +76,7 @@ public class SpotifyPlaylistFetcherServiceTests
         const int totalTracks = FetchLimit * 5 / 2;
         
         const string expectedUrlInfo = 
-            $"/v1/playlists/{playlistId}?fields=id%2cname%2cowner(display_name)%2cexternal_urls(spotify)%2cimages%2ctracks(total%2citems(track(id%2cname%2cpreview_url%2cexternal_urls(spotify)%2cartists(id%2cexternal_urls(spotify)%2cname)%2calbum(images))))";
+            $"/v1/playlists/{playlistId}?fields=id%2cname%2cowner(display_name)%2cexternal_urls(spotify)%2cimages%2ctracks(total%2citems(track(id%2cname%2cpreview_url%2cartists(id%2cname))))";
 
         var expectedHeaders = new Dictionary<string, string> { ["Authorization"] = $"Bearer {accessToken}" };
         
@@ -213,7 +213,7 @@ public class SpotifyPlaylistFetcherServiceTests
         {
             var url = passedUrlsTracks.ElementAt(i);
             var expectedUrl =
-                $"/v1/playlists/{playlistId}/tracks?fields=items(track(id%2cname%2cpreview_url%2cexternal_urls(spotify)%2cartists(id%2cexternal_urls(spotify)%2cname)%2calbum(images)))&offset={(i + 1) * FetchLimit}&limit={FetchLimit}";
+                $"/v1/playlists/{playlistId}/tracks?fields=items(track(id%2cname%2cpreview_url%2cartists(id%2cname)))&offset={(i + 1) * FetchLimit}&limit={FetchLimit}";
             Assert.That(url, Is.EqualTo(expectedUrl));
         }
     }

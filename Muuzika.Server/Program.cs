@@ -114,6 +114,7 @@ internal class Program
         services.AddSingleton<IRoomJoinerService, RoomJoinerService>();
         services.AddSingleton<IJwtService, JwtService>();
         services.AddSingleton<IPlaylistFetcherService, SpotifyPlaylistFetcherService>();
+        services.AddSingleton<IGenericPlaylistFetcherService, GenericPlaylistFetcherService>();
         // TODO: Replace with real captcha service
         services.AddSingleton<ICaptchaService, NoOpCaptchaService>();
 
