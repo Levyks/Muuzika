@@ -6,6 +6,7 @@ namespace Muuzika.Server.Models;
 
 public class Playlist: BaseProviderObject, IPlaylist
 {
+    public string Url { get; }
     public string CreatedBy { get; }
     public string ImageUrl { get; }
     
@@ -20,12 +21,14 @@ public class Playlist: BaseProviderObject, IPlaylist
     private readonly HashSet<Song> _songsNotPlayed;
     private readonly Dictionary<Artist, HashSet<Song>> _songsNotPlayedByArtist;
 
-    public Playlist(SongProvider provider, string id, string name, string createdBy, string url, string imageUrl, IEnumerable<Song> songs): base(provider, id, name, url)
+    public Playlist(SongProvider provider, string id, string name, string createdBy, string url, string imageUrl, IEnumerable<Song> songs): base(provider, id, name)
     {
         _songs = songs.ToImmutableList();
         _songsNotPlayed = new HashSet<Song>(_songs);
         _songsNotPlayedByArtist = GetSongsNotPlayedByArtist(_songs);
         NumberOfPlayableArtistRounds = GetNumberOfPlayableArtistRounds();
+
+        Url = url;
         ImageUrl = imageUrl;
         CreatedBy = createdBy;
     }

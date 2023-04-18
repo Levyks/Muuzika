@@ -4,6 +4,7 @@ using Muuzika.Server.Enums.Room;
 using Muuzika.Server.Extensions;
 using Muuzika.Server.Hubs;
 using Muuzika.Server.Hubs.Interfaces;
+using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Models.Interfaces;
 using Muuzika.Server.Providers.Interfaces;
 using Muuzika.Server.Repositories.Interfaces;
@@ -61,6 +62,7 @@ public sealed class Room: IDisposable
         serviceCollection.Reuse<IRandomProvider>(parentServiceProvider);
         serviceCollection.Reuse<IConfigProvider>(parentServiceProvider);
         serviceCollection.Reuse<IHubContext<RoomHub, IRoomHubClient>>(parentServiceProvider);
+        serviceCollection.Reuse<IPlaylistMapper>(parentServiceProvider);
         
         serviceCollection.AddSingleton(this);
         serviceCollection.AddSingleton(logger);

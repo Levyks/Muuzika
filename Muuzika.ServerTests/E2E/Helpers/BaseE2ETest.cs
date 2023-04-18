@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Muuzika.Server.Mappers.Interfaces;
 using Muuzika.Server.Providers.Interfaces;
+using Muuzika.ServerTests.E2E.Helpers.Mockers;
 
 namespace Muuzika.ServerTests.E2E.Helpers;
 
@@ -35,11 +36,13 @@ public abstract class BaseE2ETest
         Configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.e2e.json")
             .Build();
-        
+
         Factory = new MockableMuuzikaWebApplicationFactory()
             .Mock(RandomProviderMock)
             .Mock(Configuration)
             .Mock(DateTimeProviderMock);
+        
+        // SpotifyMocker.Setup(Factory, Configuration);
         
         JsonSerializerOptions = Factory.Services.GetRequiredService<JsonSerializerOptions>();
         ExceptionMapper = Factory.Services.GetRequiredService<IExceptionMapper>();

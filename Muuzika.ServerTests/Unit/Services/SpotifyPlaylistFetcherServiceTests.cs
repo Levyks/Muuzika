@@ -42,18 +42,13 @@ public class SpotifyPlaylistFetcherServiceTests
             Id: $"track-{idx}-id",
             Name: $"track-{idx}-name",
             PreviewUrl: $"track-{idx}-previewUrl",
-            ExternalUrls: new SpotifyExternalUrlsDto($"track-{idx}-spotifyUrl"),
             Artists: new[]
             {
                 new SpotifyArtistDto(
                     Id: $"track-{idx}-artist-id",
-                    Name: $"track-{idx}-artist-name",
-                    ExternalUrls: new SpotifyExternalUrlsDto($"track-{idx}-artist-SpotifyUrl")
+                    Name: $"track-{idx}-artist-name"
                 )
-            },
-            Album: new SpotifyAlbumDto(
-                Images: new[] { new SpotifyImageDto($"track-{idx}-album-imageUrl", 100, 100) }
-            )
+            }
         );
         return new SpotifyPlaylistItemDto(track);
     }

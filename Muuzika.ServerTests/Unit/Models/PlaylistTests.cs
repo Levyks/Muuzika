@@ -50,7 +50,7 @@ public class PlaylistTests
 
         foreach (var (i, expectedSongsNotPlayedCount) in indexesWithExpectedNumberOfSongs)
         {
-            var artist = new Artist(SongProvider.Spotify, $"id-{i}", $"name-{i}", $"url-{i}");
+            var artist = new Artist(SongProvider.Spotify, $"id-{i}", $"name-{i}");
             Assert.That(playlist.GetSongsNotPlayedFromArtist(artist).Count(), Is.EqualTo(expectedSongsNotPlayedCount));
         }
     }

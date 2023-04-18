@@ -1,0 +1,738 @@
+﻿{
+  "external_urls": {
+    "spotify": "https://open.spotify.com/playlist/59rP0u00qHyXZHKxZojGSr"
+  },
+  "id": "59rP0u00qHyXZHKxZojGSr",
+  "images": [
+    {
+      "height": 640,
+      "url": "https://mosaic.scdn.co/640/ab67616d0000b27380f6940402e7cc39120f2fadab67616d0000b2738123e10157e432588a5f6d9eab67616d0000b273a96efbf231ca824132bfd2fcab67616d0000b273d8f3b08cf4a1347a5e66b5a5",
+      "width": 640
+    },
+    {
+      "height": 300,
+      "url": "https://mosaic.scdn.co/300/ab67616d0000b27380f6940402e7cc39120f2fadab67616d0000b2738123e10157e432588a5f6d9eab67616d0000b273a96efbf231ca824132bfd2fcab67616d0000b273d8f3b08cf4a1347a5e66b5a5",
+      "width": 300
+    },
+    {
+      "height": 60,
+      "url": "https://mosaic.scdn.co/60/ab67616d0000b27380f6940402e7cc39120f2fadab67616d0000b2738123e10157e432588a5f6d9eab67616d0000b273a96efbf231ca824132bfd2fcab67616d0000b273d8f3b08cf4a1347a5e66b5a5",
+      "width": 60
+    }
+  ],
+  "name": "Mix melancólico",
+  "owner": {
+    "display_name": "Levy"
+  },
+  "tracks": {
+    "items": [
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1ISc8zhrqxd5WrJMkMMLSm",
+              "name": "kamaitachi"
+            }
+          ],
+          "id": "71lV3XiC9jE7XLmmBLpmgi",
+          "name": "Manual do Suicídio, Pt. 2",
+          "preview_url": "https://p.scdn.co/mp3-preview/cbc506ae2a5f8bc76e57d142d85f0764bc0d6fbf?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1pZd0nOX7NMmayahF3Xalx",
+              "name": "Sanza"
+            }
+          ],
+          "id": "0SKwndq7afYRah8rNmX9EO",
+          "name": "Alma Gêmea",
+          "preview_url": "https://p.scdn.co/mp3-preview/6627c84a7144ee360ebc51d9da8e9d48538615c6?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4WQ90yZHNwvRHZSWCG5dpU",
+              "name": "Magyn"
+            }
+          ],
+          "id": "7CR1vW99oBxvXGvr1YiBuq",
+          "name": "Tempestade",
+          "preview_url": "https://p.scdn.co/mp3-preview/cf2ace1c89b0d5c3c18288c9b4cb9a683c8e465e?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1wxPItEzr7U7rGSMPqZ25r",
+              "name": "Shiloh Dynasty"
+            },
+            {
+              "id": "1AUZYkS7eLmZUnBjQyJmwf",
+              "name": "Timmies"
+            }
+          ],
+          "id": "5e2l2ZAMwHmrkdM4Z6NhAR",
+          "name": "Again",
+          "preview_url": "https://p.scdn.co/mp3-preview/f6798c039ad7c0f760fbd4bc2a6f6a39e8847d64?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "12YpLBd0FvDYA0c4nsaxFp",
+              "name": "Konai"
+            }
+          ],
+          "id": "1OFRWZOEgR2P6ErP2SdsYE",
+          "name": "Oodal - Tearboy",
+          "preview_url": "https://p.scdn.co/mp3-preview/8a51c4322ed920213a50a9168b501d0f57e3d2b5?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "2cFrymmkijnjDg9SS92EPM",
+              "name": "blackbear"
+            }
+          ],
+          "id": "3SErMoIKdRELto2OspGs5L",
+          "name": "idfc",
+          "preview_url": "https://p.scdn.co/mp3-preview/4a717697ef9d6835046bebdeb24175c5466e753d?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "77SW9BnxLY8rJ0RciFqkHh",
+              "name": "The Neighbourhood"
+            }
+          ],
+          "id": "2QjOHCTQ1Jl3zawyYOpxh6",
+          "name": "Sweater Weather",
+          "preview_url": "https://p.scdn.co/mp3-preview/877602f424a9dea277b13301ffc516f9fd1fbe7e?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4Ly0KABsxlx4fNj63zJTrF",
+              "name": "Seafret"
+            }
+          ],
+          "id": "1Fid2jjqsHViMX6xNH70hE",
+          "name": "Atlantis",
+          "preview_url": "https://p.scdn.co/mp3-preview/2097364ff6c9f41d658ea1b00a5e2153dc61144b?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4zP89WNloauEX8v8JdZbxP",
+              "name": "UCLÃ"
+            },
+            {
+              "id": "4oPnjkJcLqOim9KJxvIYMz",
+              "name": "Duzz"
+            }
+          ],
+          "id": "5rNHchF00RDf45YhWXBBOX",
+          "name": "Kurt Cobain - Acústico",
+          "preview_url": "https://p.scdn.co/mp3-preview/d931e8e7eee028593710c33f46c6f71a04bdb4db?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "2kCcBybjl3SAtIcwdWpUe3",
+              "name": "Lil Peep"
+            }
+          ],
+          "id": "6Ox1rvlwEpB49drasQm6RF",
+          "name": "Star Shopping",
+          "preview_url": "https://p.scdn.co/mp3-preview/d415dfca7346912ad65b904e06c8996a2ead8e06?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1pZd0nOX7NMmayahF3Xalx",
+              "name": "Sanza"
+            }
+          ],
+          "id": "5OI0E87tnk0m4lOCBvz5MB",
+          "name": "Rubi",
+          "preview_url": "https://p.scdn.co/mp3-preview/ad038f3e5902ee703c90a785ab60d8c120b998da?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1ISc8zhrqxd5WrJMkMMLSm",
+              "name": "kamaitachi"
+            }
+          ],
+          "id": "4qVu5KLXFVTJFJsrsRSGD4",
+          "name": "Lucy",
+          "preview_url": "https://p.scdn.co/mp3-preview/1e5145b2a086e3cb0a0842a0f49f9b3963107d7d?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "0hWRVPGWjaXcEvg8l65Tx0",
+              "name": "Luiz Lins"
+            }
+          ],
+          "id": "5HR0ti4siqbTIr1BitbZ7d",
+          "name": "Eu Tô Bem",
+          "preview_url": "https://p.scdn.co/mp3-preview/b4255c7e87ba3d2adac521d49cadaa12eab313d7?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4Uc8Dsxct0oMqx0P6i60ea",
+              "name": "Conan Gray"
+            }
+          ],
+          "id": "4xqrdfXkTW4T0RauPLv3WA",
+          "name": "Heather",
+          "preview_url": null
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1gl0S9pS0Zw0qfa14rDD3D",
+              "name": "Surf Curse"
+            }
+          ],
+          "id": "7EkWXAI1wn8Ii883ecd9xr",
+          "name": "Freaks",
+          "preview_url": "https://p.scdn.co/mp3-preview/039505c3b40b4478ec45ccb64fed211487887dd0?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "15UsOTVnJzReFVN1VCnxy4",
+              "name": "XXXTENTACION"
+            }
+          ],
+          "id": "5TXDeTFVRVY7Cvt0Dw4vWW",
+          "name": "Revenge",
+          "preview_url": "https://p.scdn.co/mp3-preview/8f5fe8bb510463b2da20325c8600200bf2984d83?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "12YpLBd0FvDYA0c4nsaxFp",
+              "name": "Konai"
+            }
+          ],
+          "id": "5RnWYO0cLSetSDOzCyF9lN",
+          "name": "Infinito",
+          "preview_url": "https://p.scdn.co/mp3-preview/5eaa16f98f106de700c45c646962140830987dbb?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1ISc8zhrqxd5WrJMkMMLSm",
+              "name": "kamaitachi"
+            }
+          ],
+          "id": "1e0S2LL2am7tFwrUxCI9oV",
+          "name": "Noiva Cadáver",
+          "preview_url": "https://p.scdn.co/mp3-preview/c4508728b962fdeb5cb5fd262f5e9c71de8ab729?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "7Ceg1mJmu4lAzuhQU9hQFJ",
+              "name": "Knust"
+            },
+            {
+              "id": "0hWRVPGWjaXcEvg8l65Tx0",
+              "name": "Luiz Lins"
+            },
+            {
+              "id": "6QmnOxsr8M6iD5Zqpb2src",
+              "name": "CMK"
+            }
+          ],
+          "id": "1uxFhAQQOrF7nbL49DLcls",
+          "name": "Perder o Interesse",
+          "preview_url": "https://p.scdn.co/mp3-preview/ea0a23dc3b28463c4af1f342bd0c239a496c2b79?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4IWBUUAFIplrNtaOHcJPRM",
+              "name": "James Arthur"
+            }
+          ],
+          "id": "55Am8neGJkdj2ADaM3aw5H",
+          "name": "Train Wreck",
+          "preview_url": "https://p.scdn.co/mp3-preview/b844823ed86631219a514760db55169dc7ae4b51?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "6ab8tnQvr8sXXIpSZCrbQs",
+              "name": "YUNG LIXO"
+            }
+          ],
+          "id": "5wANYA5Nuw4HTjUlOvesUq",
+          "name": "Polaroid",
+          "preview_url": "https://p.scdn.co/mp3-preview/fb0bc4d98903d16fcd2f751e8120f74885b9bafd?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4OFUU6MkPNc2X96UJMlR0h",
+              "name": "Sadstation"
+            },
+            {
+              "id": "41iSmIaCOZWguy6ZVspcF2",
+              "name": "Pedrosa"
+            }
+          ],
+          "id": "2XyHmHCOvNogoRiWBA1L1I",
+          "name": "Terça de Tarde",
+          "preview_url": "https://p.scdn.co/mp3-preview/68a56ee53905eaa8ba409ac81136da7a55535d8e?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1ISc8zhrqxd5WrJMkMMLSm",
+              "name": "kamaitachi"
+            }
+          ],
+          "id": "3B3oVRredsZOD9ZKzLpbXV",
+          "name": "Rainha dos Bichos da Floresta",
+          "preview_url": "https://p.scdn.co/mp3-preview/bd9ca02ebb5e259bd0ee185beb6d120dc45da1d3?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "12YpLBd0FvDYA0c4nsaxFp",
+              "name": "Konai"
+            },
+            {
+              "id": "5IHoS8MNZViitbMbR4gztH",
+              "name": "Kadu Brown"
+            }
+          ],
+          "id": "6y5fR03IqeL56tHtKiwUaO",
+          "name": "Cidade Lunar",
+          "preview_url": "https://p.scdn.co/mp3-preview/9a179ccca4a793925f8356ce92f97f8f6b781dbf?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1TYJOhNSxMOODWiDVhuyZb",
+              "name": "Kawe"
+            },
+            {
+              "id": "2TqXAXuNUnnzzCTuAs5DX5",
+              "name": "Ananda"
+            },
+            {
+              "id": "5ZTnWo7IY6rdIxm6aTSR84",
+              "name": "Original Quality"
+            }
+          ],
+          "id": "1tLBXifMqnSqLZrk1Rsl8n",
+          "name": "Portugal",
+          "preview_url": "https://p.scdn.co/mp3-preview/014bef82bf2bc846846ed0aa8e1b40098e498926?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "5sgcRRQA3HrL1AVk6oMUeg",
+              "name": "VMZ"
+            }
+          ],
+          "id": "60dSCGlP1zdohj3npOEXV2",
+          "name": "Tipo Rick E Morty",
+          "preview_url": "https://p.scdn.co/mp3-preview/38a10d755fca58a01b6cedd892415c88a76d68e0?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "5uxYttuMvoojMzmPmWWg6T",
+              "name": "Ikki"
+            }
+          ],
+          "id": "1y7B1p9VonsL5LFocFETo5",
+          "name": "Vem pra Cá",
+          "preview_url": "https://p.scdn.co/mp3-preview/4c47bf7600e5ce932fd1e80e2ecffafb9f363d24?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4UhExRgMW9QR7oNmTI2lPG",
+              "name": "Arrested Youth"
+            }
+          ],
+          "id": "4AXAS26dUVTnCnubySfkbv",
+          "name": "The Kid I Used to Know",
+          "preview_url": "https://p.scdn.co/mp3-preview/1bf82241073a3ac7bbfbb677dbb4a971d4ef6e1c?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4WQ90yZHNwvRHZSWCG5dpU",
+              "name": "Magyn"
+            }
+          ],
+          "id": "5dtlQOMmfYh6GXqpZLZWPj",
+          "name": "Sorvete de Ovomaltine",
+          "preview_url": "https://p.scdn.co/mp3-preview/8c84066f4451bfbe1f6bf12df9b89a307975e508?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "15UsOTVnJzReFVN1VCnxy4",
+              "name": "XXXTENTACION"
+            }
+          ],
+          "id": "3GVkPk8mqxz0itaAriG1L7",
+          "name": "Everybody Dies In Their Nightmares",
+          "preview_url": "https://p.scdn.co/mp3-preview/57ea372058336bcc4774b5dcee03d6712b16ae5c?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "6qqNVTkY8uBg9cP3Jd7DAH",
+              "name": "Billie Eilish"
+            },
+            {
+              "id": "6LuN9FCkKOj5PcnpouEgny",
+              "name": "Khalid"
+            }
+          ],
+          "id": "0u2P5u6lvoDfwTYjAADbn4",
+          "name": "lovely (with Khalid)",
+          "preview_url": null
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "0ZCFSmJKfaYQi0gRSShdou",
+              "name": "TakaB"
+            },
+            {
+              "id": "2cK4L8fSVVqvW2gyePXeJw",
+              "name": "Anny"
+            }
+          ],
+          "id": "6wyC76uQxUbyY7ITgeIGYv",
+          "name": "Lua de Neon",
+          "preview_url": "https://p.scdn.co/mp3-preview/4454af799a5e8a55ad9d092b9a3d4559d2981b88?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1ISc8zhrqxd5WrJMkMMLSm",
+              "name": "kamaitachi"
+            }
+          ],
+          "id": "1Mt9t8HeHtqXFktUYATbdS",
+          "name": "Alice",
+          "preview_url": "https://p.scdn.co/mp3-preview/9f07ad2fd29af0a64681fe512aa04d4028e52f62?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4WQ90yZHNwvRHZSWCG5dpU",
+              "name": "Magyn"
+            }
+          ],
+          "id": "78lxkXxRgQ39mWlS56iuGN",
+          "name": "Anjos e Demônios",
+          "preview_url": "https://p.scdn.co/mp3-preview/5b0e04053af1369b17a05cd415a98453ec242c8f?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1WNEynd3mjWx1DZByqbLq4",
+              "name": "ZéVitor"
+            }
+          ],
+          "id": "3RONh08e1IA1M254XxuhWL",
+          "name": "O Jeito Que Fala",
+          "preview_url": "https://p.scdn.co/mp3-preview/f450df238de772f778be4783540b3d387db98892?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "12YpLBd0FvDYA0c4nsaxFp",
+              "name": "Konai"
+            }
+          ],
+          "id": "1T0GIZAiExB4vBONl35cqx",
+          "name": "Pico de Adrenalina",
+          "preview_url": "https://p.scdn.co/mp3-preview/ea34c7773e24d75c6a3a8832b3936230dc8579c8?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "027TpXKGwdXP7iwbjUSpV8",
+              "name": "The Walters"
+            }
+          ],
+          "id": "4SqWKzw0CbA05TGszDgMlc",
+          "name": "I Love You So",
+          "preview_url": "https://p.scdn.co/mp3-preview/83919b3d62a4ae352229c0a779e8aa0c1b2f4f40?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "5sgcRRQA3HrL1AVk6oMUeg",
+              "name": "VMZ"
+            }
+          ],
+          "id": "0v8rTdjGL3YQ921bLbgJfv",
+          "name": "Lois Lane",
+          "preview_url": "https://p.scdn.co/mp3-preview/b457817100b4f15e81da4e256caebe82cdde4439?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4OFUU6MkPNc2X96UJMlR0h",
+              "name": "Sadstation"
+            },
+            {
+              "id": "0GVaM9LtM51CEGq6FJ3MC8",
+              "name": "Zant"
+            }
+          ],
+          "id": "1oWAWoxYKeAezoljpZ8wlJ",
+          "name": "Tô Meio Apaixonado",
+          "preview_url": "https://p.scdn.co/mp3-preview/aa2bca989ab54cdf89e312ff0b091940d583d7da?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4IWBUUAFIplrNtaOHcJPRM",
+              "name": "James Arthur"
+            }
+          ],
+          "id": "0otRX6Z89qKkHkQ9OqJpKt",
+          "name": "Car's Outside",
+          "preview_url": "https://p.scdn.co/mp3-preview/cfaa30729da8d2d8965fae154b6e9d0964a2ea6b?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1VCdDCwUx7F9jhZeAShaB9",
+              "name": "Eu Sou o Gabe"
+            }
+          ],
+          "id": "0baitLZycqTNvCEwK1yAon",
+          "name": "Ventilador de Teto",
+          "preview_url": "https://p.scdn.co/mp3-preview/49544847a226a68000b797d8fe8b3571328f93e7?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "4WQ90yZHNwvRHZSWCG5dpU",
+              "name": "Magyn"
+            }
+          ],
+          "id": "4rTR3utj3ZCRNozrF1ZdPw",
+          "name": "kyoto",
+          "preview_url": "https://p.scdn.co/mp3-preview/af4928ae8b4448e2c4042b1df644c4dfce8f56e9?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "12YpLBd0FvDYA0c4nsaxFp",
+              "name": "Konai"
+            },
+            {
+              "id": "6XQrv3AiNUS61JFK1VITTU",
+              "name": "Jean Tassy"
+            }
+          ],
+          "id": "5cXtf61aXQf36aLLI5zgVP",
+          "name": "Petricor",
+          "preview_url": "https://p.scdn.co/mp3-preview/bd664344257d2badb00396a4fd6dbf0b6b0f108b?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1ISc8zhrqxd5WrJMkMMLSm",
+              "name": "kamaitachi"
+            }
+          ],
+          "id": "6AjH7GslegRLdEaXaEgSVx",
+          "name": "Chuva de Sexta",
+          "preview_url": "https://p.scdn.co/mp3-preview/9e0dc86160621bd478a74ebe70ccf72913a7c8df?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "7ycozuv4AEKRZ85WLz6tEy",
+              "name": "sofi frozza"
+            }
+          ],
+          "id": "0S8OkXHUuSHKyCTKomDxaw",
+          "name": "Ily",
+          "preview_url": "https://p.scdn.co/mp3-preview/4e961370bb97166e53246d1344d9823ffe4b6c79?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "5yBdprfbFGKUg6ckI8gtSZ",
+              "name": "luqeta"
+            }
+          ],
+          "id": "0NU7w0ENEV10gvbwnBdJR8",
+          "name": "Pq Speedplug - Versão Alternativa",
+          "preview_url": "https://p.scdn.co/mp3-preview/9810222de05373737ea7348585054414da6e5f80?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "41iSmIaCOZWguy6ZVspcF2",
+              "name": "Pedrosa"
+            }
+          ],
+          "id": "3MlMMabvVmUVrAGHekqAOn",
+          "name": "Terça de Tarde 2",
+          "preview_url": "https://p.scdn.co/mp3-preview/244b0a118f6a29ec27a56d941411e618c18108c0?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "7l8ESevPECrqChwl3Bf7ov",
+              "name": "Lou Garcia"
+            }
+          ],
+          "id": "1KHWBJTX7apuuYsEmqZLa8",
+          "name": "Não Fosse Tão Tarde",
+          "preview_url": "https://p.scdn.co/mp3-preview/69294289507a5d61870415eeb79ef8ae362e70d2?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "1GzNbVSgVruCtWjQAHVKYF",
+              "name": "Raffa Mogi"
+            }
+          ],
+          "id": "5SwVgo4CqTzEfj0IWIn19c",
+          "name": "Amava Tanto Que Me Trocou",
+          "preview_url": "https://p.scdn.co/mp3-preview/46c584db058315aa9ec89c2d52a4d908a44f30fa?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      },
+      {
+        "track": {
+          "artists": [
+            {
+              "id": "5ENhy70PiA8QzfghaFQ7Ey",
+              "name": "slō"
+            },
+            {
+              "id": "4xEsDLdD6DgtKhlCCJq4Ri",
+              "name": "twilight"
+            },
+            {
+              "id": "1LbQ66B9mZIHGhjRu9fvKo",
+              "name": "Tazzy"
+            }
+          ],
+          "id": "35vvJihHyfYE0lp61fEi6I",
+          "name": "another love - slowed + reverb",
+          "preview_url": "https://p.scdn.co/mp3-preview/27184ef8f44013a7f34b8b3611d415afd7f3acd9?cid=0f0fda177f9d44a5a182d78e606264b9"
+        }
+      }
+    ],
+    "total": 50
+  }
+}

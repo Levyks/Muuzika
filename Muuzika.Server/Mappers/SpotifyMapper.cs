@@ -31,9 +31,7 @@ public class SpotifyMapper: ISpotifyMapper
             provider: SongProvider.Spotify,
             id: track.Id,
             name: track.Name,
-            url: track.ExternalUrls.Spotify,
             previewUrl: track.PreviewUrl,
-            imageUrl: track.Album.Images.First().Url,
             artists: track.Artists.Select(ToArtist)
         );
     }
@@ -43,8 +41,7 @@ public class SpotifyMapper: ISpotifyMapper
         return new Artist(
             provider: SongProvider.Spotify,
             id: artist.Id,
-            name: artist.Name,
-            url: artist.ExternalUrls.Spotify
+            name: artist.Name
         );
     }
 }

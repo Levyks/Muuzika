@@ -7,14 +7,12 @@ public abstract class BaseProviderObject: IEquatable<BaseProviderObject>
     public SongProvider Provider { get; } 
     public string Id { get; }
     public string Name { get; }
-    public string Url { get; }
 
-    protected BaseProviderObject(SongProvider provider, string id, string name, string url)
+    protected BaseProviderObject(SongProvider provider, string id, string name)
     {
         Provider = provider;
         Id = id;
         Name = name;
-        Url = url;
     }
 
     public bool Equals(BaseProviderObject? other)

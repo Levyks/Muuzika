@@ -4,10 +4,8 @@ public record SpotifyTrackDto(
     string Id,
     string Name,
     string? PreviewUrl,
-    SpotifyExternalUrlsDto ExternalUrls,
-    IEnumerable<SpotifyArtistDto> Artists,
-    SpotifyAlbumDto Album
+    IEnumerable<SpotifyArtistDto> Artists
 )
 {
-    public const string Fields = $"id,name,preview_url,external_urls({SpotifyExternalUrlsDto.Fields}),artists({SpotifyArtistDto.Fields}),album({SpotifyAlbumDto.Fields})";
+    public const string Fields = $"id,name,preview_url,artists({SpotifyArtistDto.Fields})";
 }

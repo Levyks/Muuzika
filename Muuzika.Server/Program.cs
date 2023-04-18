@@ -71,8 +71,8 @@ internal class Program
                     corsPolicyBuilder.AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowCredentials()
-                        .WithOrigins("http://127.0.0.1:5173");
+                        //.AllowCredentials()
+                        .AllowAnyOrigin(); //.WithOrigins("http://127.0.0.1:5173");
                 });
             });
     

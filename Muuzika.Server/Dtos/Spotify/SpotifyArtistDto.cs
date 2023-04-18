@@ -2,9 +2,8 @@
 
 public record SpotifyArtistDto(
     string Id,
-    string Name, 
-    SpotifyExternalUrlsDto ExternalUrls
+    string Name
 )
 {
-    public const string Fields = $"id,external_urls({SpotifyExternalUrlsDto.Fields}),name";
+    public const string Fields = "id,name";
 }

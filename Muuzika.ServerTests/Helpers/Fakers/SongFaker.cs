@@ -25,7 +25,7 @@ public static class SongFaker
     public static ImmutableArray<Song> GetSongs(Artist artist, int numberOfSongs = 5)
     {
         return Enumerable.Range(0, numberOfSongs)
-            .Select(i => new Song(SongProvider.Spotify, $"{artist.Id}-{i}" , $"{artist.Name}-{i}", $"{artist.Url}-{i}", "previewUrl", "imageUrl", ImmutableArray.Create(artist)))
+            .Select(i => new Song(SongProvider.Spotify, $"{artist.Id}-{i}" , $"{artist.Name}-{i}", "previewUrl", ImmutableArray.Create(artist)))
             .ToImmutableArray();
     }
 }
