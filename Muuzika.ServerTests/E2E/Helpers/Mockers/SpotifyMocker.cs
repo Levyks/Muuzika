@@ -1,8 +1,11 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
+using System.Web;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using Moq;
 using Moq.Protected;
 using Muuzika.Server.Dtos.Spotify;
@@ -49,25 +52,49 @@ public class SpotifyMocker
         };
     }
     
-    private async Task<HttpResponseMessage> HandlePlaylistRequest(HttpRequestMessage request)
+    private async Task<HttpResponseMessage> HandlePlaylistInfoRequest(string playlistId, string? fields)
     {
-        if (request.RequestUri?.Query != SpotifyPlaylistInfoWithTracksFirstPageDto.Fields)
+        if (fields != SpotifyPlaylistInfoWithTracksFirstPageDto.Fields)
+            throw new Exception($"Unexpected request for playlist info with fields: {fields}");
+        
+        var responseJson = await File.ReadAllTextAsync($"Fixtures/Spotify/Playlists/{playlistId}/info.json");
+        
+        return new HttpResponseMessage
         {
-            throw new Exception($"Unexpected request: {request}");
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent(responseJson, Encoding.UTF8, "application/json")
+        };
+    }
+    
+    private async Task<HttpResponseMessage> HandleWebApiRequest(HttpRequestMessage request)
+    {
+        var uri = request.RequestUri!;
+        
+        if (uri.LocalPath.StartsWith("/v1/playlists/") && uri.Segments.Length == 4)
+        {
+            var parsedQuery = HttpUtility.ParseQueryString(uri.Query);
+            return await HandlePlaylistInfoRequest(uri.Segments[^1], parsedQuery["fields"]);
         }
         
-        var playlistId = request.RequestUri.Segments[^1];
+        var playlistId = uri.Segments[^3];
 
         throw new NotImplementedException();
     }
-    
 
-    private Task<HttpResponseMessage> HandleSendAsync(HttpRequestMessage request, CancellationToken _) => request.RequestUri?.ToString() switch
-    {
-        "https://accounts.spotify.com/api/token" => HandleTokenRequest(request),
-        { } url when url.StartsWith("https://api.spotify.com/v1/playlists") => HandlePlaylistRequest(request),
-        _ => throw new NotImplementedException()
-    };
+    private Task<HttpResponseMessage> HandleAccountsRequest(HttpRequestMessage request) => 
+        request.RequestUri?.LocalPath switch 
+        { 
+            "/api/token" => HandleTokenRequest(request), 
+            _ => throw new Exception($"Unexpected request: {request}") 
+        };
+
+    private Task<HttpResponseMessage> HandleSendAsync(HttpRequestMessage request, CancellationToken _) =>
+        request.RequestUri?.Host switch
+        {
+            "accounts.spotify.com" => HandleAccountsRequest(request),
+            "api.spotify.com" => HandleWebApiRequest(request),
+            _ => throw new Exception($"Unexpected request: {request}")
+        };
     
     private HttpClient GetMockedHttpClient()
     {

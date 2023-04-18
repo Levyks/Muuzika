@@ -34,14 +34,17 @@ public class RoomWorkerService: IRoomWorkerService
 
         var task = Task.Delay(delay, cts.Token);
         
-        _room.CancellationTokenSources.Add(cts);
+        lock (_room.CancellationTokenSources)
+            _room.CancellationTokenSources.Add(cts);
         
         WatchTask(task);
             
         // ReSharper disable once MethodSupportsCancellation
         task.ContinueWith(t =>
         {
-            _room.CancellationTokenSources.Remove(cts);
+            lock (_room.CancellationTokenSources)
+                _room.CancellationTokenSources.Remove(cts);
+            
             if (!t.IsCompletedSuccessfully) return;
 
             try
