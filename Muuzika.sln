@@ -4,6 +4,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muuzika.Server", "Muuzika.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muuzika.ServerTests", "Muuzika.ServerTests\Muuzika.ServerTests.csproj", "{8A338081-D470-4A20-8EBD-7A2E0C76903E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D168D2C8-AF7E-4579-BB31-04623D029493}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain.csproj", "{C04C41D5-5492-4022-8A8E-9A3AC4DA0821}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{671FA434-57D9-4861-810A-4075F254733D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,17 @@ Global
 		{8A338081-D470-4A20-8EBD-7A2E0C76903E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A338081-D470-4A20-8EBD-7A2E0C76903E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A338081-D470-4A20-8EBD-7A2E0C76903E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C04C41D5-5492-4022-8A8E-9A3AC4DA0821}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C04C41D5-5492-4022-8A8E-9A3AC4DA0821}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C04C41D5-5492-4022-8A8E-9A3AC4DA0821}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C04C41D5-5492-4022-8A8E-9A3AC4DA0821}.Release|Any CPU.Build.0 = Release|Any CPU
+		{671FA434-57D9-4861-810A-4075F254733D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{671FA434-57D9-4861-810A-4075F254733D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{671FA434-57D9-4861-810A-4075F254733D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{671FA434-57D9-4861-810A-4075F254733D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C04C41D5-5492-4022-8A8E-9A3AC4DA0821} = {D168D2C8-AF7E-4579-BB31-04623D029493}
+		{671FA434-57D9-4861-810A-4075F254733D} = {D168D2C8-AF7E-4579-BB31-04623D029493}
 	EndGlobalSection
 EndGlobal
